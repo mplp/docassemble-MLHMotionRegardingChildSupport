@@ -1,0 +1,680 @@
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.ALAnyState:any_state.yml
+  - docassemble.mlhframework:mlh_interview_framework.yml
+---
+metadata:
+  title: |
+    Motion to Change or Get Child Support
+  short title: |
+    Motion Regarding Child Support
+  description: |-
+    Use this tool to prepare forms to ask the court to change a Child Support Order, or to get a
+    Child Support Order if you need one in a divorce case, custody case, paternity case, or other
+    type of family court case.
+  tags:
+    - "Family"
+  authors:
+    - Bryce Willey
+    - Amy Billmire
+---
+code: |
+  interview_short_title = "Motion Regarding Child Support"
+---
+code: |
+  github_repo_name = "docasemble-MLHMotionRegardingChildSupport"
+---
+code: |
+  al_form_type = "existing_case"
+---
+code: |
+  MLH_time_min = 20
+  MLH_time_max = 60
+---
+# TODO(brycew): the images are fairly small inside the collapsed templates; can we make them bigger?
+objects:
+  - image_court_papers: |
+      DAStaticFile.using(
+        filename="court_papers.jpg",
+        alt=word("""
+          A court form. The court information is circled in the top right; State of Michigan, Judicial District, Judicial Circuit, and County Probate.
+          The case number is circled in the top left: 01-234 DM. Below those is the party information, including the plaintiffs' and defendants' names, and address
+        """))
+  - image_case_number: |
+      DAStaticFile.using(
+        filename="case_number.jpg",
+        alt=word("A court form. The case number, 01-234 DM, is circled in the top right"))
+  - image_uniform_order_date: |
+      DAStaticFile.using(
+        filename="date_of_order.jpg",
+        alt=word("The third page of the uniform child support order. The date is at the bottom, to the left of the judge's name"))
+  - image_plaintiff_or_defendant: |
+      DAStaticFile.using(
+        filename="plaintiff_or_defendant.jpg",
+        alt=word("The plaintiff and defendant's names are circled, partially down the first page. The Plaintiff is on the left, and the defendant is on the right."))
+  - image_support_amount: |
+      DAStaticFile.using(
+        filename="support_amount.jpg",
+        alt=word("The first page of the uniform child support order. The amounts are at the bottom, in item number 3."))
+  - image_subtotal_amount: |
+      DAStaticFile.using(
+        filename="subtotal_amount.png",
+        alt=word("In the support table in the uniform child support order. The subtotal is the 4th row, and the value is the furthest right column with a value."))
+---
+objects:
+  - users: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
+  - other_parties: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
+  - children: ALPeopleList.using(auto_gather=True, ask_number=True, complete_attribute="completed")
+  - court_list: ALCourtLoader.using(file_name='docassemble.mlhframework:data/sources/michigan_court_info.xlsx')
+---
+# NOTE: for users and other_parties
+# TODO(brycew): complete instead of completed (matches other DA conventions)
+generic object: ALIndividual
+code: |
+  x.name.first
+  # TODO(brycew): do we need to handle international addresses?
+  x.address.address
+  x.phone_number
+  x.completed = True
+---
+# NOTE: ensures there is only 1 party on both sides
+code: |
+  users.there_is_another = False
+---
+code: |
+  other_parties.there_are_any = True
+---
+code: |
+  other_parties.there_is_another = False
+---
+# TODO(brycew): do validation on children to make sure they are minors?
+code: |
+  children[i].name.first
+  children[i].birthdate
+  children[i].completed = True
+---
+id: interview_order_motion_regarding_child_support
+code: |
+  intro_screen
+  MLH_standard_intro_pages
+  if not has_existing_case:
+    existing_case_kickout
+  speak_to_lawyer
+  what_you_will_need
+  docket_number
+  has_existing_support_order
+
+  if has_existing_support_order:
+    recent_judgment_date
+
+  county_choice
+  court_index
+  the_court
+
+  if not is_parent or third_party_named:
+    parent_third_party_kickout
+
+  user_started_case
+  public_record_fyi
+
+  users.gather()
+  other_parties.gather()
+  children.gather()
+
+  current_child_support_signpost
+  who_paid
+  paid_child_care
+  paid_medical_costs
+
+  # TODO(brycew): sections
+  if agreed_on_who_pays:
+    support_formula_fyi
+    who_pays_in_agreement
+    base_support_in_agreement
+    child_care_in_agreement
+    ordinary_medical_in_agreement
+    is_additional_amount_in_agreement
+    asking_for_payer_benefits_credit
+  else:
+    circumstances_changed
+
+  efile_notice
+  if esign:
+    signature_date
+  
+  interview_motion_regarding_child_support = True
+---
+mandatory: True
+code: |
+  interview_motion_regarding_child_support
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  motion_child_support_download
+---
+id: intro screen
+question: |
+  Welcome to Michigan Legal Help’s Do-It-Yourself Motion to Change or Get Child Support tool. 
+subquestion: |
+  This tool can help you prepare the forms you need to file a Motion Regarding Support in Michigan.
+
+  This tool is only for parents who:
+
+  * Already have a child support order from a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to change the amount of child support; OR
+  * Have filed a Michigan divorce, separate maintenance, paternity, custody or family support case and want to ask the court to enter a child support order; OR
+  * Have a Michigan judgment of divorce or separate maintenance, or a paternity or custody order which didn’t include child support, and want to ask the court to order child support in that case now.
+continue button field: intro_screen
+---
+id: has_existing_case
+question: |
+  Do you have an existing Michigan family court case?
+subquestion: |
+  If you do not already have an existing Michigan divorce, separate maintenance, paternity, custody or family support case, return to [Michigan Legal Help](https://michiganlegalhelp.org/) for more information.
+fields:
+  - Do you have an existing Michigan family court case?: has_existing_case
+    datatype: yesnoradio
+---
+id: existing_case_kickout
+event: existing_case_kickout
+question: |
+  You cannot use this tool without a Michigan child support case
+subquestion: |
+  You said you already do not have an existing Michigan divorce, separate maintenance, paternity, custody or family support case.
+  You must have one to continue to use this tool.
+  
+  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+buttons:
+  - Exit: exit
+    url: https://michiganlegalhelp.org
+---
+id: You May Want to Speak with a Lawyer
+question: |
+  You May Want to Speak with a Lawyer
+subquestion: |
+  You may want to speak to a lawyer if:
+
+  * you have a child support order from another state but you now live in Michigan
+    * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
+  * A motion to show cause was filed against you for non-payment of support,
+  * You did not appear at the show cause hearing, and
+  * The court issued a bench warrant against you.
+
+  You can use the [Guide to Legal Help](https://michiganlegalhelp.org/guide-to-legal-help) to find a lawyer or legal services office in your area if you want more help.
+continue button field: speak_to_lawyer
+---
+id: what_you_will_need
+question: |
+  What you will need to complete this form
+subquestion: |
+  To complete this form, you will need:
+
+  * the case number,
+  * court information, and
+  * information about the parties from your existing case
+
+  ${ collapse_template(where_info_on_papers_template) }
+continue button field: what_you_will_need
+---
+template: where_info_on_papers_template
+subject: |
+  Where can I find this information?
+content: |
+  Here is an example of where you can find this information on your court papers.
+
+  * The court information is circled in blue, on the top left.
+  * The case number is circled in yellow, on the top right.
+  * The information about the parties is circled in red
+
+  ${ image_court_papers }
+---
+id: MLH intro time
+question: |
+  Using this tool
+subquestion: |
+  It should take you between ${ MLH_time_min } and ${ MLH_time_max } minutes to finish answering questions.
+  After you answer all the questions, your personalized *Motion Regarding Support* will be ready to print.
+  You will also get a *Uniform Child Support Order* without any numbers filled in
+
+  Depending on your court, you may get a referral to the Friend of the Court, and they may prepare
+  a recommended support order for you. You can also use the
+  [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html)
+  on the Michigan Department of Health and Human Services website to calculate support, and
+  transfer the numbers manually to the support order.
+continue button field: MLH_intro_time
+---
+id: docket number
+question: |
+  What is your case number?
+subquestion: |
+  Enter the case number from your existing divorce, separate maintenance, paternity, custody or family support case.
+
+  ${ collapse_template(where_case_number) }
+fields:
+  - no label: docket_number
+    maxlength: 25
+---
+template: where_case_number
+subject: |
+  Where can I find the case number?
+content: |
+  The case number is usually on the top right of your court forms. Below is an image where you can find this info.
+
+  ${ image_case_number }
+---
+id: existing child support order
+question: |
+  Do you already have a child support order?
+fields:
+  - Do you have a child support order in your case ${ docket_number }: has_existing_support_order
+    datatype: yesnoradio
+---
+id: recent_judgment_date
+question: |
+  What date was the most recent judgment or order for child support entered?
+subquestion: |
+  ${ collapse_template(where_date_uniform_child_order) }
+fields:
+  - What date was the most recent judgment entered?: recent_judgment_date
+    datatype: date
+    max: ${ today() }
+---
+template: where_date_uniform_child_order
+subject: |
+  Where can I find the date on my order forms?
+content: |
+  If your support order was entered on a Uniform Child Support Order form in Michigan,
+  you can find the date the order was entered on the last page of the order.
+
+  ${ image_uniform_order_date }
+
+  If you have a different type of support order, the date that the order was entered is usually found at the end of the order, near the judge’s signature.
+---
+id: is_parent
+question: |
+  Are you the parent of the child or children this Motion Regarding Support is for?
+fields:
+  - no label: is_parent
+    datatype: yesnoradio
+---
+id: third_party_named
+question: |
+  Is a third party (a non-parent) named in your existing family court case?
+fields:
+  - no label: third_party_named
+    datatype: yesnoradio
+---
+id: parent_third_party_kickout
+event: parent_third_party_kickout
+question: |
+  You cannot use this tool to prepare a Motion Regarding Support
+subquestion: |
+  This tool may only be used to prepare a Motion Regarding Support in an existing Michigan family court case between two parents, with no third-party involvement.
+
+  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+buttons:
+  - Exit: exit
+    url: https://michiganlegalhelp.org
+---
+id: what is the user's role?
+question: |
+  What party are you in your existing case?
+subquestion: |
+  You are called the “moving party” because you are filing this Motion Regarding Support.  
+
+  In your existing divorce, separate maintenance, paternity, custody, or family support case, you are either the Plaintiff or the Defendant.
+
+  What party are you in your case?
+
+  ${ collapse_template(help_user_ask_role_template) }
+fields: 
+  - no label: user_ask_role
+    datatype: radio
+    choices:
+      - I am the Plaintiff or Petitioner: plaintiff
+      - I am the Defendant or Respondent: defendant
+  - note: |
+      Okay, you are the **Plaintiff** or **Petitioner** in this case. The other 
+      side is the Defendant or Respondent.
+    show if:
+      variable: user_ask_role
+      is: "plaintiff"
+  - note: |
+      Okay, you are the **Defendant** or **Respondent** in this case. The other 
+      side is the Plaintiff or Petitioner.
+    show if:
+      variable: user_ask_role
+      is: "defendant"
+---
+# TODO(brycew): move this to mlhframework
+template: help_user_ask_role_template
+subject: |
+  How do I know?
+content: |
+  You can find the parties by looking at the first page of an existing court document, like a complaint, petition, or answer. The top of the first page is the “caption” which has the basic case information. This area will list all of the parties in the case with their titles.
+
+  ${ image_plaintiff_or_defendant }
+
+  If you were the first person to file a form to start this case, you are the "Plaintiff" or the "Petitioner."  If someone else started this case by filing in court, you
+  are the "Defendant" or the "Respondent." 
+---
+question: |
+  The information you put on your form is a public record
+subquestion: |
+  All of the information you supply, including your address and telephone information,
+  will be included on forms that you file with the court and deliver to the Defendant.
+
+  Keep in mind that your case file is a public record and anyone could ask to look at it and see your address and phone number.
+
+  ${ collapse_template(confidential_how_to)}
+continue button field: public_record_fyi
+---
+template: confidential_how_to
+subject: |
+  What if I'm afraid for my safety if this information is discovered by the other party or someone else
+content: |
+  To keep your address confidential, you need to have one of the following:
+
+  * A Personal Protection Order or other order which keeps your address confidential, OR
+  * On a [Uniform Child Custody Jurisdiction Enforcement Act Affidavit form](https://courts.michigan.gov/Administration/SCAO/Forms/courtforms/mc416.pdf),
+    you need to state that you and/or your children’s safety would be at risk if you disclose your address.
+
+  In either one of these scenarios, you can use a confidential address and phone number (such as the address and phone number
+  of a friend or relative who has given their permission, or a Post Office Box) instead of your residential address and personal phone number.
+---
+id: how many children
+question: |
+  How many minor children is this support for?
+fields:
+  - no label: children.target_number
+    datatype: integer
+    min: 0
+    validation messages:
+      min: |
+        You need to have at least one minor child that you are request support for.
+---
+id: current_child_support_signpost
+question: |
+  Current amount of child support
+subquestion: |
+  In the next few questions we will ask you about the amounts of child support in your current order.
+
+  You will be asked about base support, ordinary medical costs, and child care costs.
+
+  ${ collapse_template(explain_base_support) }
+
+  ${ collapse_template(where_support_amounts) }
+continue button field: current_child_support_signpost
+---
+template: explain_base_support
+subject: |
+  Can you explain more?
+content: |
+  Base support is the ordinary monthly child support amount, for the general care and needs of a child.
+
+  Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
+
+  Child care costs are used to allow a parent to work, look for work, or go to school. For most children the child care obligation ends around age 12, but it may be longer if the child’s health or safety requires it.
+
+  To learn more, read [Child Support in a Nutshell](https://michiganlegalhelp.org/resources/family/child-support-nutshell).
+---
+template: where_support_amounts
+subject: |
+  Where is the amount of support in the current support order?
+content: |
+  The support amounts can be found in the table at the bottom of the first page of your current support order,
+  as seen in the red rectangle in the image below. 
+
+  ${ image_support_amount }
+---
+id: who_paid
+question: |
+  Who was ordered to pay support in the current support order?
+fields:
+  - no label: who_paid
+    choices:
+      - Plaintiff (${ plaintiffs[0] }): plaintiff
+      - Defendant (${ defendants[0] }): defendant
+---
+id: subtotal amount
+question: |
+  What is the subtotal amount on your current Uniform Child Support Order?
+subquestion: |
+  ${ collapse_template(where_subtotal_amount) }
+fields:
+  - no label: subtotal_amount
+    datatype: currency
+---
+template: where_subtotal_amount
+subject: |
+  Where do I find the Subtotal amount?
+content: |
+  You can find the subtotal amount on the first page of the uniform child support order. It is highlighted in yellow
+  in it's full table below.
+
+  ${ image_subtotal_amount }
+---
+# TODO(bryce): make a map to get proper name of "who_paid" again
+question: |
+  Monthly child care costs
+subquestion: |
+  ${ what_is_child_care.content }
+fields:
+  - Was the ${ who_paid } ordered to pay monthly child care costs?: paid_child_care
+    datatype: yesnoradio
+  - How much in child care costs were they ordered to pay per month?: child_care_amount
+    datatype: currency
+    show if: paid_child_care
+---
+template: what_is_child_care
+content: |
+  Child care costs are used to allow a parent to work, look for work, or go to school.
+  For most children the child care obligation ends around age 12, but it may be longer if the child’s health or safety requires it.
+---
+question: |
+  Monthly Ordinary medical costs
+subquestion: |
+  Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
+  Ordinary medical costs are different than extraordinary uninsured health case costs, which are
+  listed in a different part of the Uniform Child Support Order.
+fields:
+  - Was the ${ who_paid } ordered to pay ordinary medical costs?: paid_medical_costs
+    datatype: yesnoradio
+  - How much in ordinary medical costs were they ordered to pay per month?: medical_care_amount
+    show if: paid_medical_costs
+---
+question: |
+  Have you and ${ other_parties } agreed on who should pay support and how much?
+fields:
+  - no label: agreed_on_who_pays
+    datatype: yesnoradio
+---
+question: |
+  Child Support Formula
+subquestion: |
+  The court must order support according to the Michigan Child Support Formula unless the result would be unfair.
+  If the parents reach an agreement about the child support amount, the court can consider the
+  agreement, but it does not have to approve it.
+
+  You can use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html)
+  on the Michigan Department of Health and Human Services website to find out what the support amount might be in your case.
+
+  The Michigan Child Support Formula uses:
+
+  * The parents' incomes
+  * The number of nights per year (“overnights”) the children spend with each parent
+  * The number of children
+  * Medical costs
+  * Child care costs
+  * Other factors.
+
+  To learn more, read [Child Support in a Nutshell](https://michiganlegalhelp.org/resources/family/child-support-nutshell).
+continue button field: support_formula_fyi
+---
+question: |
+  In your agreement with ${ other_parties }, who are you asking the court to pay support?
+fields:
+  - no label: who_pays_in_agreement
+    choices:
+      - Plaintiff (${ plaintiffs[0] }): plaintiff
+      - Defendant (${ defendants[0] }): defendant
+---
+# TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
+question: |
+  In the agreement, how much per month are you asking the court to order for these costs?
+fields:
+  - How much for base support?: base_support_in_agreement
+    datatype: currency
+    help: |
+      Base support is the ordinary monthly child support amount, for the general care and needs of a child. 
+  - How much for child care costs?: child_care_in_agreement
+    datatype: currency
+    help: |
+      ${ what_is_child_care.content }
+  - How much for ordinary medical costs?: ordinary_medical_in_agreement
+    datatype: currency
+    help: |
+      Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
+---
+question: |
+  In the agreement, are you asking the court to order an additional amount each month for other expenses?
+fields:
+  - no label: is_additional_amount_in_agreement
+    datatype: yesnoradio
+  - "Complete the following sentence. 'The reason for the other expenses is as follows:'": additional_amount_reason
+    input type: area
+    show if: is_additional_amount_in_agreement
+  - How much per month are you asking the court to order for the other expenses?: additional_amount_in_agreement
+    datatype: currency
+    show if: is_additional_amount_in_agreement
+---
+question: |
+  In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
+subquestion: |
+  For example, the ${ who_pays_in_agreement } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
+
+  If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
+  Veteran’s Administration, or Railroad Retirement, his or her dependent children may also get benefits based on the payer’s work record. If this is so,
+  the court will count the children’s benefits as a credit towards payment of the parent’s child support obligation. In other words, the amount of dependent
+  benefits should be subtracted from the support amount.
+fields:
+  - Are you asking for the court to give ${ who_pays_in_agreement } a credit?: asking_for_payer_benefits_credit
+    datatype: yesnoradio
+  - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
+    datatype: radio
+    choices:
+      - Social Security: social_security
+      - Veteran's Administration: veterans_administration
+      - Railroad Retirement: railroad_retirement
+      - Other: other
+    show if: asking_for_payer_benefits_credit
+  - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: child_benefit_amount
+    datatype: currency
+    show if: asking_for_payer_benefits_credit
+---
+question: |
+  Have circumstances changed?
+subquestion: |
+  The court may only change the amount of child support if there has been a change in circumstances. Examples of changes in circumstances are:
+
+  * The needs of the children have changed;
+  * There has been a change in custody;
+  * The parent who pays child support has had a change in income; or
+  * The parent who receives child support has had a change in income.
+fields:
+  - Have circumstances changed?: circumstances_changed
+    datatype: yesnoradio
+---
+# TODO(brycew): copied from LHI, adjust text to what's actually in our form
+question: |
+  Completing this process does not file your forms with the court
+subquestion: |
+  You need to file them at court in person, by mail, e-mail, or by e-filing.
+  If you are e-filing, you must use [MiFILE](https://mifile.courts.michigan.gov/).
+  Read the instructions that you will get with your forms for more information.
+
+  ${ collapse_template(am_i_going_to_efile) }
+
+  This tool will create separate forms so you can more easily e-file using MiFILE, if you plan to e-file.
+  This means that you may need to download multiple files to get all of the forms you will need.
+
+  You will be able to get all forms you need by clicking the Download Your Form(s) button on the page at the end of this tool.
+  You will then see a list of documents to download. Make sure you download each of them.
+continue button field: efile_notice
+---
+template: am_i_going_to_efile
+subject: |
+  How do I know if I am going to e-file?
+content: |
+  Not all courts offer e-filing at this time. To find out if your court has e-filing, read the
+  [What is E-Filing?](https://michiganlegalhelp.org/resources/mifile/what-e-filing) article.
+  The article tells you how to find out which courts have e-filing and what kinds of cases those courts are accepting by e-filing.
+
+  Look for the two-letter case type code at the end of your case number.
+  (This could be DM, DC, DS, DP, or a different code.)
+---
+question: |
+  Electronic Signature
+subquestion: |
+  This tool can put "*/s/ ${ users[0] }*" where you would sign your name so you do not have to sign the form by hand. The court will accept this as your signature.
+
+  Would you like to add your electronic signature to your form? 
+fields:
+  - Would you like to add your electronic signature to your form?: esign
+    datatype: yesnoradio
+---
+id: download simpmotion
+event: simpmotion_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_simpmotion'), label='Edit answers', color='info') }
+  
+  ${ al_user_bundle.download_list_html() }
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+progress: 100
+---
+############
+## Overridden questions from AL
+############
+---
+sets:
+  - other_parties[i].name.first
+  - other_parties[i].name.last
+  - other_parties[i].name.middle
+  - other_parties[i].name.suffix
+id: names of opposing parties
+question: |
+  % if user_started_case:
+  Name of **defendant** in this matter
+  % else:
+  Name of **plaintiff** in this matter
+  % endif
+fields:
+  - code: |
+      other_parties[i].name_fields(person_or_business='person')
+---
+id: children names without birthdate
+sets:
+  - children[i].name.first
+  - children[i].name.last
+  - children[i].name.middle
+  - children[i].name.suffix
+question: |
+  What is the name of your ${ ordinal(i) } child?
+subquestion: |
+  % if len(children.complete_elements()) > 0:
+  You have alreay told us about ${ comma_and_list(children.complete_elements()) }.
+  % endif
+fields:
+  - code: |
+      children[i].name_fields()
