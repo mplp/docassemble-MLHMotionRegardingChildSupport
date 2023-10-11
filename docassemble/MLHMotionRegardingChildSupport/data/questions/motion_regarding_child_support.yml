@@ -65,7 +65,6 @@ objects:
   - users: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
   - other_parties: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
   - children: ALPeopleList.using(auto_gather=True, ask_number=True, complete_attribute="completed")
-  - court_list: ALCourtLoader.using(file_name='docassemble.mlhframework:data/sources/michigan_court_info.xlsx')
 ---
 # NOTE: for users and other_parties
 # TODO(brycew): complete instead of completed (matches other DA conventions)
@@ -123,6 +122,7 @@ code: |
 
   current_child_support_signpost
   who_paid
+  subtotal_amount
   paid_child_care
   paid_medical_costs
 
@@ -678,3 +678,115 @@ subquestion: |
 fields:
   - code: |
       children[i].name_fields()
+---
+objects:
+  - mrcs_instructions: ALDocument.using(title="Instructions", filename="Instructions.docx", enabled=True, has_addendum=False)
+  - mrcs_attachment: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", enabled=True, has_addendum=False)
+  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", enabled=True, has_addendum=False)
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_fod10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+---
+attachment:
+  variable name: mrcs_attachment.addendum
+  docx template file: Motion Regarding Support Addendum.docx
+---
+attachments:
+  - name: Motion Regarding Support Instructions
+    filename: Instructions
+    variable name: mrcs_instructions[i]
+    skip undefined: True
+    docx template file: mrcs_next_steps.docx
+  - name: Motion Regarding Support Attachment
+    filename: Motion Regarding Support - FOC 50
+    variable name: mrcs_attachment[i]
+    skip undefined: True
+    pdf template file: Motion Regarding Support - FOC 50.pdf
+    editable: False
+    fields:
+      - trial_court_circuit: |
+          % if the_court.type == 'circuit':
+          ${ the_court.number }
+          % endif
+      - trial_court_district: |
+          % if the_court.type == 'district':
+          %{ the_court.number }
+          % endif
+      - docket_number: ${ docket_number }
+      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+      - trial_court_phone_number: ${ the_court.phone }
+      # TODO(brycew): continue here
+      - plaintiff_is_moving_party: ${ user_started_case }
+      - defendant_is_moving_party: ${ not user_started_case }
+      - third_party_is_moving_party: False
+      - plaintiffs: ${ plaintiffs }
+      - defendants: ${ defendants }
+      - third_parties: ""
+      - judgment_entered: ${ has_existing_support_order }
+      - judgment_entered_date: ${ recent_judgment_date }
+      - no_support_order: ${ not has_existing_support_order }
+      # TODO(brycew): is this always true?
+      - paid_support_costs: True
+      - plaintiff_pays_support: ${ who_paid == "plaintiff" }
+      - defendant_pays_support:  ${ who_paid == "defendant" }
+      - support_amount: ${ subtotal_amount }
+      - paid_child_care: ${ paid_child_care }
+      - plaintiff_pays_care: ${ paid_child_care and who_paid == "plaintiff" }
+      - defendant_pays_care: ${ paid_child_care and who_paid == "defendant" }
+      - child_care_amount: ${ child_care_amount if paid_child_care else "" }
+      - paid_medical_costs: ${ paid_medical_costs }
+      - plaintiff_pays_medical: ${ paid_medical_costs and who_paid == "plaintiff" }
+      - defendant_pays_medical: ${ paid_medical_costs and who_paid == "defendant" }
+      - medical_care_amount: ${ medical_care_amount if paid_medical_costs else "" }
+      - conditions_have_changed:
+      - other_parties: ${ other_parties }
+      - is_new_agreement: ${ agreed_on_who_pays }
+      - is_new_agreement__2: ${ agreed_on_who_pays }
+      - signature_date: ${ signature_date if esign else "" }
+      - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
+      # TODO(brycew): add judge stuff
+      - judge_name: ${ judge.name }
+      - judge_bar_number: ${ judge_bar_number }
+      - hearing_date: ${ format_date(hearing_date) }
+      - hearing_time: ${ hearing_time }
+      - hearing_address_on_one_line: ${ hearing_address_on_one_line }
+      - service_signature_date: 
+      - service_signature:
+      # Unused button : ___instructions_link____
+  - name: Uniform Child Support Order
+    variable name: mrcs_foc10[i]
+    skip undefined: True
+    editable: True
+    pdf template file: Uniform Child Support Order - FOC 10.pdf
+    fields:
+      - trial_court_circuit: |
+          % if the_court.type == 'circuit':
+          ${ the_court.number }
+          % endif
+      - trial_court_district: |
+          % if the_court.type == 'district':
+          %{ the_court.number }
+          % endif
+      - docket_number: ${ docket_number }
+      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+      # TODO(brycew): continue here
+  - name: Uniform Child Support Order Deviation Addendum
+    variable name: mrcs_foc10d[i]
+    skip undefined: True
+    editable: True
+    pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
+    fields:
+      - trial_court_circuit: |
+          % if the_court.type == 'circuit':
+          ${ the_court.number }
+          % endif
+      - trial_court_district: |
+          % if the_court.type == 'district':
+          %{ the_court.number }
+          % endif
+      - docket_number: ${ docket_number }
+      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+      # TODO(brycew): continue here
+
