@@ -31,7 +31,7 @@ code: |
   MLH_time_min = 20
   MLH_time_max = 60
 ---
-# TODO(brycew): the images are fairly small inside the collapsed templates; can we make them bigger?
+# TODO(#1): the images are fairly small inside the collapsed templates; can we make them bigger?
 objects:
   - image_court_papers: |
       DAStaticFile.using(
@@ -62,19 +62,19 @@ objects:
         alt=word("In the support table in the uniform child support order. The subtotal is the 4th row, and the value is the furthest right column with a value."))
 ---
 objects:
-  - users: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
-  - other_parties: ALPeopleList.using(auto_gather=True, complete_attribute="completed", target_number=1)
-  - children: ALPeopleList.using(auto_gather=True, ask_number=True, complete_attribute="completed")
+  - users: ALPeopleList.using(auto_gather=True, complete_attribute="complete", target_number=1)
+  - other_parties: ALPeopleList.using(auto_gather=True, complete_attribute="complete", target_number=1)
+  - children: ALPeopleList.using(auto_gather=True, ask_number=True, complete_attribute="complete")
+  - judge: ALPeopleList.using(ask_number=True,target_number=1)
 ---
 # NOTE: for users and other_parties
-# TODO(brycew): complete instead of completed (matches other DA conventions)
 generic object: ALIndividual
 code: |
   x.name.first
-  # TODO(brycew): do we need to handle international addresses?
+  # TODO(#6): do we need to handle international addresses?
   x.address.address
   x.phone_number
-  x.completed = True
+  x.complete = True
 ---
 # NOTE: ensures there is only 1 party on both sides
 code: |
@@ -86,23 +86,35 @@ code: |
 code: |
   other_parties.there_is_another = False
 ---
-# TODO(brycew): do validation on children to make sure they are minors?
 code: |
   children[i].name.first
   children[i].birthdate
-  children[i].completed = True
+  children[i].complete = True
+---
+sections:
+  - review_intro: "Indroduction"
+  - review_prior_case: "Prior Case Information"
+  - review_your_info: "Your Information"
+  - review_other_info: "Other Parent's Information"
+  - review_children_info: "Children Information"
+  - review_prior_order: "Prior Order Information"
+  - review_agreement: "Agreement Information"
+  - review_support_requested: "Support Requested Information"
+  - review_conclusion: "Conclusion"
 ---
 id: interview_order_motion_regarding_child_support
 code: |
+  nav.set_section("review_intro")
   intro_screen
   MLH_standard_intro_pages
+
+  nav.set_section("review_prior_case")
   if not has_existing_case:
     existing_case_kickout
   speak_to_lawyer
   what_you_will_need
   docket_number
   has_existing_support_order
-
   if has_existing_support_order:
     recent_judgment_date
 
@@ -113,30 +125,46 @@ code: |
   if not is_parent or third_party_named:
     parent_third_party_kickout
 
+  nav.set_section("review_your_info")
   user_started_case
   public_record_fyi
 
   users.gather()
+  nav.set_section("review_other_info")
   other_parties.gather()
+  nav.set_section("review_children_info")
   children.gather()
 
-  current_child_support_signpost
-  who_paid
-  subtotal_amount
-  paid_child_care
-  paid_medical_costs
+  nav.set_section("review_prior_order")
+  if has_existing_support_order:
+    current_child_support_signpost
+    who_paid
+    subtotal_amount
+    paid_child_care
+    paid_medical_costs
 
-  # TODO(brycew): sections
-  if agreed_on_who_pays:
-    support_formula_fyi
-    who_pays_in_agreement
-    base_support_in_agreement
-    child_care_in_agreement
-    ordinary_medical_in_agreement
-    is_additional_amount_in_agreement
-    asking_for_payer_benefits_credit
-  else:
-    circumstances_changed
+  nav.set_section("review_agreement")
+  if not agreed_on_who_pays:
+    if not have_circumstances_changed:
+      circumstances_kickout
+    circumstance_changes
+
+  nav.set_section("review_support_requested")
+  support_formula_fyi
+  who_pays_new
+  base_support_new
+  child_care_new
+  ordinary_medical_new
+  is_additional_amount_new
+  asking_for_payer_benefits_credit
+
+  nav.set_section("review_conclusion")
+  # TODO(#7): do we need hearing info?
+  #if has_hearing_info:
+  #  hearing_at_court
+  #  hearing_time
+  #  judge.name
+  #  judge_bar_number
 
   efile_notice
   if esign:
@@ -161,12 +189,12 @@ id: intro screen
 question: |
   Welcome to Michigan Legal Help’s Do-It-Yourself Motion to Change or Get Child Support tool. 
 subquestion: |
-  This tool can help you prepare the forms you need to file a Motion Regarding Support in Michigan.
+  This tool can help you prepare the forms you need to file a *Motion Regarding Support in Michigan*.
 
   This tool is only for parents who:
 
   * Already have a child support order from a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to change the amount of child support; OR
-  * Have filed a Michigan divorce, separate maintenance, paternity, custody or family support case and want to ask the court to enter a child support order; OR
+  * Have filed a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to enter a child support order; OR
   * Have a Michigan judgment of divorce or separate maintenance, or a paternity or custody order which didn’t include child support, and want to ask the court to order child support in that case now.
 continue button field: intro_screen
 ---
@@ -174,7 +202,7 @@ id: has_existing_case
 question: |
   Do you have an existing Michigan family court case?
 subquestion: |
-  If you do not already have an existing Michigan divorce, separate maintenance, paternity, custody or family support case, return to [Michigan Legal Help](https://michiganlegalhelp.org/) for more information.
+  If you do not already have an existing Michigan divorce, separate maintenance, paternity, custody, or family support case, return to [Michigan Legal Help](https://michiganlegalhelp.org/) for more information.
 fields:
   - Do you have an existing Michigan family court case?: has_existing_case
     datatype: yesnoradio
@@ -184,7 +212,7 @@ event: existing_case_kickout
 question: |
   You cannot use this tool without a Michigan child support case
 subquestion: |
-  You said you already do not have an existing Michigan divorce, separate maintenance, paternity, custody or family support case.
+  You said you already do not have an existing Michigan divorce, separate maintenance, paternity, custody, or family support case.
   You must have one to continue to use this tool.
   
   If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
@@ -198,8 +226,8 @@ question: |
 subquestion: |
   You may want to speak to a lawyer if:
 
-  * you have a child support order from another state but you now live in Michigan
-    * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
+  * You have a child support order from another state but you now live in Michigan
+      * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
   * A motion to show cause was filed against you for non-payment of support,
   * You did not appear at the show cause hearing, and
   * The court issued a bench warrant against you.
@@ -230,7 +258,7 @@ content: |
   * The case number is circled in yellow, on the top right.
   * The information about the parties is circled in red
 
-  ${ image_court_papers }
+  ${ image_court_papers.show(width="100%") }
 ---
 id: MLH intro time
 question: |
@@ -251,7 +279,7 @@ id: docket number
 question: |
   What is your case number?
 subquestion: |
-  Enter the case number from your existing divorce, separate maintenance, paternity, custody or family support case.
+  Enter the case number from your existing divorce, separate maintenance, paternity, custody, or family support case.
 
   ${ collapse_template(where_case_number) }
 fields:
@@ -264,7 +292,7 @@ subject: |
 content: |
   The case number is usually on the top right of your court forms. Below is an image where you can find this info.
 
-  ${ image_case_number }
+  ${ image_case_number.show(width="100%") }
 ---
 id: existing child support order
 question: |
@@ -272,16 +300,13 @@ question: |
 fields:
   - Do you have a child support order in your case ${ docket_number }: has_existing_support_order
     datatype: yesnoradio
----
-id: recent_judgment_date
-question: |
-  What date was the most recent judgment or order for child support entered?
-subquestion: |
-  ${ collapse_template(where_date_uniform_child_order) }
-fields:
+  - note: |
+      ${ collapse_template(where_date_uniform_child_order) }
+    show if: has_existing_support_order
   - What date was the most recent judgment entered?: recent_judgment_date
     datatype: date
     max: ${ today() }
+    show if: has_existing_support_order
 ---
 template: where_date_uniform_child_order
 subject: |
@@ -290,7 +315,7 @@ content: |
   If your support order was entered on a Uniform Child Support Order form in Michigan,
   you can find the date the order was entered on the last page of the order.
 
-  ${ image_uniform_order_date }
+  ${ image_uniform_order_date.show(width="100%") }
 
   If you have a different type of support order, the date that the order was entered is usually found at the end of the order, near the judge’s signature.
 ---
@@ -335,17 +360,17 @@ fields:
   - no label: user_ask_role
     datatype: radio
     choices:
-      - I am the Plaintiff or Petitioner: plaintiff
-      - I am the Defendant or Respondent: defendant
+      - I am the Plaintiff: plaintiff
+      - I am the Defendant: defendant
   - note: |
-      Okay, you are the **Plaintiff** or **Petitioner** in this case. The other 
-      side is the Defendant or Respondent.
+      Okay, you are the **Plaintiff** in this case. The other 
+      side is the Defendant.
     show if:
       variable: user_ask_role
       is: "plaintiff"
   - note: |
-      Okay, you are the **Defendant** or **Respondent** in this case. The other 
-      side is the Plaintiff or Petitioner.
+      Okay, you are the **Defendant** in this case. The other 
+      side is the Plaintiff.
     show if:
       variable: user_ask_role
       is: "defendant"
@@ -357,10 +382,10 @@ subject: |
 content: |
   You can find the parties by looking at the first page of an existing court document, like a complaint, petition, or answer. The top of the first page is the “caption” which has the basic case information. This area will list all of the parties in the case with their titles.
 
-  ${ image_plaintiff_or_defendant }
+  ${ image_plaintiff_or_defendant.show(width="100%") }
 
-  If you were the first person to file a form to start this case, you are the "Plaintiff" or the "Petitioner."  If someone else started this case by filing in court, you
-  are the "Defendant" or the "Respondent." 
+  If you were the first person to file a form to start this case, you are the "Plaintiff". If someone else started this case by filing in court, you
+  are the "Defendant".
 ---
 question: |
   The information you put on your form is a public record
@@ -386,6 +411,16 @@ content: |
   In either one of these scenarios, you can use a confidential address and phone number (such as the address and phone number
   of a friend or relative who has given their permission, or a Post Office Box) instead of your residential address and personal phone number.
 ---
+id: persons contact information
+generic object: ALIndividual
+question: |
+  What is ${x}'s phone number?
+subquestion: |
+  If you don't know, you can skip this question
+fields:
+  - Phone: x.phone_number
+    required: False
+---
 id: how many children
 question: |
   How many minor children is this support for?
@@ -396,6 +431,17 @@ fields:
     validation messages:
       min: |
         You need to have at least one minor child that you are request support for.
+---
+id: minor birthdate question
+question: |
+  When was ${ children[i] } born?
+fields:
+  - Birthdate: children[i].birthdate
+    datatype: BirthDate
+    alMin: ${ format_date( today() - date_interval(years=18), format='MM/dd/yyyy') }
+    alMinMessage: |
+      This form is only for children under 18, but you said ${ children[i].name.familiar() } was over 18.
+      Either correct the birth date, or ${ MLH_back_button_label.lower() } and add a different child under 18.
 ---
 id: current_child_support_signpost
 question: |
@@ -418,7 +464,7 @@ content: |
 
   Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 
-  Child care costs are used to allow a parent to work, look for work, or go to school. For most children the child care obligation ends around age 12, but it may be longer if the child’s health or safety requires it.
+  ${ what_is_child_care.content }
 
   To learn more, read [Child Support in a Nutshell](https://michiganlegalhelp.org/resources/family/child-support-nutshell).
 ---
@@ -429,7 +475,7 @@ content: |
   The support amounts can be found in the table at the bottom of the first page of your current support order,
   as seen in the red rectangle in the image below. 
 
-  ${ image_support_amount }
+  ${ image_support_amount.show(width="100%") }
 ---
 id: who_paid
 question: |
@@ -456,15 +502,14 @@ content: |
   You can find the subtotal amount on the first page of the uniform child support order. It is highlighted in yellow
   in it's full table below.
 
-  ${ image_subtotal_amount }
+  ${ image_subtotal_amount.show(width="100%") }
 ---
-# TODO(bryce): make a map to get proper name of "who_paid" again
 question: |
   Monthly child care costs
 subquestion: |
   ${ what_is_child_care.content }
 fields:
-  - Was the ${ who_paid } ordered to pay monthly child care costs?: paid_child_care
+  - Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: paid_child_care
     datatype: yesnoradio
   - How much in child care costs were they ordered to pay per month?: child_care_amount
     datatype: currency
@@ -482,7 +527,7 @@ subquestion: |
   Ordinary medical costs are different than extraordinary uninsured health case costs, which are
   listed in a different part of the Uniform Child Support Order.
 fields:
-  - Was the ${ who_paid } ordered to pay ordinary medical costs?: paid_medical_costs
+  - Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: paid_medical_costs
     datatype: yesnoradio
   - How much in ordinary medical costs were they ordered to pay per month?: medical_care_amount
     show if: paid_medical_costs
@@ -516,53 +561,65 @@ subquestion: |
 continue button field: support_formula_fyi
 ---
 question: |
+  % if agreed_on_who_pays:
   In your agreement with ${ other_parties }, who are you asking the court to pay support?
+  % else:
+  Who are you asking the court to pay support?
+  % endif
 fields:
-  - no label: who_pays_in_agreement
+  - no label: who_pays_new
     choices:
       - Plaintiff (${ plaintiffs[0] }): plaintiff
       - Defendant (${ defendants[0] }): defendant
 ---
 # TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
 question: |
+  % if agreed_on_who_pays:
   In the agreement, how much per month are you asking the court to order for these costs?
+  % else:
+  How much per month are you asking the court to order for these costs?
+  % endif
 fields:
-  - How much for base support?: base_support_in_agreement
+  - How much for base support?: base_support_new
     datatype: currency
     help: |
       Base support is the ordinary monthly child support amount, for the general care and needs of a child. 
-  - How much for child care costs?: child_care_in_agreement
+  - How much for child care costs?: child_care_new
     datatype: currency
     help: |
       ${ what_is_child_care.content }
-  - How much for ordinary medical costs?: ordinary_medical_in_agreement
+  - How much for ordinary medical costs?: ordinary_medical_new
     datatype: currency
     help: |
       Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 ---
 question: |
+  % if agreed_on_who_pays:
   In the agreement, are you asking the court to order an additional amount each month for other expenses?
+  % else:
+  Are you asking the court to order an additional amount each month for other expenses?
+  % endif
 fields:
-  - no label: is_additional_amount_in_agreement
+  - no label: is_additional_amount_new
     datatype: yesnoradio
   - "Complete the following sentence. 'The reason for the other expenses is as follows:'": additional_amount_reason
     input type: area
-    show if: is_additional_amount_in_agreement
-  - How much per month are you asking the court to order for the other expenses?: additional_amount_in_agreement
+    show if: is_additional_amount_new
+  - How much per month are you asking the court to order for the other expenses?: additional_amount_new
     datatype: currency
-    show if: is_additional_amount_in_agreement
+    show if: is_additional_amount_new
 ---
 question: |
   In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
 subquestion: |
-  For example, the ${ who_pays_in_agreement } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
+  For example, the ${ who_pays_new } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
 
   If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
   Veteran’s Administration, or Railroad Retirement, his or her dependent children may also get benefits based on the payer’s work record. If this is so,
   the court will count the children’s benefits as a credit towards payment of the parent’s child support obligation. In other words, the amount of dependent
   benefits should be subtracted from the support amount.
 fields:
-  - Are you asking for the court to give ${ who_pays_in_agreement } a credit?: asking_for_payer_benefits_credit
+  - Are you asking for the court to give ${ who_pays_new } a credit?: asking_for_payer_benefits_credit
     datatype: yesnoradio
   - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
     datatype: radio
@@ -576,18 +633,52 @@ fields:
     datatype: currency
     show if: asking_for_payer_benefits_credit
 ---
+id: have_circumstances_changed
 question: |
   Have circumstances changed?
 subquestion: |
   The court may only change the amount of child support if there has been a change in circumstances. Examples of changes in circumstances are:
 
+  ${ circumstance_examples.content }
+
+fields:
+  - Have circumstances changed?: have_circumstances_changed
+    datatype: yesnoradio
+---
+template: circumstance_examples
+subject: What are some examples of changes in circumstances?
+content: |
   * The needs of the children have changed;
   * There has been a change in custody;
   * The parent who pays child support has had a change in income; or
   * The parent who receives child support has had a change in income.
+---
+id: circumstance_changes
+question: |
+  How have your circumstances changed?
+subquestion: |
+  Explain in detail, and use complete sentences.
+
+  Your answer will be attached to your *Motion Regarding Support*.
+  It will help the court decide whether child support should be changed at this time.
+
+  ${ collapse_template(circumstance_examples) }
 fields:
-  - Have circumstances changed?: circumstances_changed
-    datatype: yesnoradio
+  - no label: circumstance_changes
+    input type: area
+---
+# TODO(brycew): Move this earlier in the interview?
+id: circumstances_kickout
+event: circumstances_kickout
+question: |
+  You cannot use this tool to prepare a Motion Regarding Support
+subquestion: |
+  Michigan law requires a change in circumstances for the court to change a child support order.
+
+  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+buttons:
+  - Exit: exit
+    url: https://michiganlegalhelp.org
 ---
 # TODO(brycew): copied from LHI, adjust text to what's actually in our form
 question: |
@@ -627,8 +718,8 @@ fields:
   - Would you like to add your electronic signature to your form?: esign
     datatype: yesnoradio
 ---
-id: download simpmotion
-event: simpmotion_download
+id: download child support motion
+event: motion_child_support_download
 question: |
   All done
 subquestion: |
@@ -642,6 +733,65 @@ subquestion: |
 
   ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
 progress: 100
+---
+id: Do you know hearing time and place
+question: |
+  Motion Hearing Information
+subquestion: |
+  Have you already contacted the court to find out:
+  
+  * when the hearing will be
+  * where the hearing will be, and
+  * what judge will run the hearing?
+under: |  
+ **For most people, the answer will be no.**  
+ 
+ Most people will get the judge and hearing information **after** they file this motion with the court.  We will give you more instructions when you finish this tool.
+fields:
+  - no label: has_hearing_info
+    datatype: yesnoradio
+---
+if: has_hearing_info
+id: When will the hearing be
+question: |
+  When will the hearing be?
+fields:
+  - "Date of hearing": hearing_date
+    datatype: date
+    required: False
+    min: ${ today() }
+  - "Hearing Time": hearing_time
+    maxlength: 13
+    required: False
+    #removed "time" datatype due to failure on some older Androids and weird interface.
+---
+if: has_hearing_info
+id: Will the hearing be held at the courthouse
+question: |
+  Where will the hearing be?
+fields:
+  - "Will the hearing be in person at the courthouse?": hearing_at_court
+    datatype: yesnoradio
+    required: False
+  - "* Type the address if it will be at a physical location. * If the hearing will be online or by phone, briefly explain.": hearing_address_on_one_line
+    show if:
+      variable: hearing_at_court 
+      is: False
+    maxlength: 50 
+---
+if: has_hearing_info
+id: Judge information
+question: |
+  What judge will hear your motion?
+subquestion: |
+  What is the name and bar number (or "P-Number") of the judge who will hear this motion?
+fields:
+  - "Judge's name": judge.name
+    maxlength: 35
+    required: False
+  - "Judge's bar number": judge_bar_number
+    maxlength: 7
+    required: False
 ---
 ############
 ## Overridden questions from AL
@@ -673,7 +823,7 @@ question: |
   What is the name of your ${ ordinal(i) } child?
 subquestion: |
   % if len(children.complete_elements()) > 0:
-  You have alreay told us about ${ comma_and_list(children.complete_elements()) }.
+  You have already told us about ${ comma_and_list(children.complete_elements()) }.
   % endif
 fields:
   - code: |
@@ -686,12 +836,18 @@ objects:
   - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", enabled=True, has_addendum=False)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_fod10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
 ---
 attachment:
   variable name: mrcs_attachment.addendum
   docx template file: Motion Regarding Support Addendum.docx
+---
+code: |
+  # TODO(brycew): we don't really need to treat the addendum like an addendum?
+  # `circumstance_changes` go in it, but also structured info about other payments.
+  # Should just be a DOCX template, wrapped with a bundle for the mrcs_attachment.
+  mrcs_attachment.overflow_fields.gathered = True
 ---
 attachments:
   - name: Motion Regarding Support Instructions
@@ -712,12 +868,11 @@ attachments:
           % endif
       - trial_court_district: |
           % if the_court.type == 'district':
-          %{ the_court.number }
+          ${ the_court.number }
           % endif
       - docket_number: ${ docket_number }
       - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
       - trial_court_phone_number: ${ the_court.phone }
-      # TODO(brycew): continue here
       - plaintiff_is_moving_party: ${ user_started_case }
       - defendant_is_moving_party: ${ not user_started_case }
       - third_party_is_moving_party: False
@@ -727,7 +882,7 @@ attachments:
       - judgment_entered: ${ has_existing_support_order }
       - judgment_entered_date: ${ recent_judgment_date }
       - no_support_order: ${ not has_existing_support_order }
-      # TODO(brycew): is this always true?
+      # TODO(#5): is this always true?
       - paid_support_costs: True
       - plaintiff_pays_support: ${ who_paid == "plaintiff" }
       - defendant_pays_support:  ${ who_paid == "defendant" }
@@ -746,12 +901,11 @@ attachments:
       - is_new_agreement__2: ${ agreed_on_who_pays }
       - signature_date: ${ signature_date if esign else "" }
       - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
-      # TODO(brycew): add judge stuff
-      - judge_name: ${ judge.name }
-      - judge_bar_number: ${ judge_bar_number }
-      - hearing_date: ${ format_date(hearing_date) }
-      - hearing_time: ${ hearing_time }
-      - hearing_address_on_one_line: ${ hearing_address_on_one_line }
+      #- judge_name: ${ judge.name if has_hearing_info else "" }
+      #- judge_bar_number: ${ judge_bar_number if has_hearing_info else "" }
+      #- hearing_date: ${ format_date(hearing_date) if has_hearing_info else "" }
+      #- hearing_time: ${ hearing_time if has_hearing_info else "" }
+      #- hearing_address_on_one_line: ${ hearing_address_on_one_line if has_hearing_info else "" }
       - service_signature_date: 
       - service_signature:
       # Unused button : ___instructions_link____
@@ -767,7 +921,7 @@ attachments:
           % endif
       - trial_court_district: |
           % if the_court.type == 'district':
-          %{ the_court.number }
+          ${ the_court.number }
           % endif
       - docket_number: ${ docket_number }
       - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
@@ -784,7 +938,7 @@ attachments:
           % endif
       - trial_court_district: |
           % if the_court.type == 'district':
-          %{ the_court.number }
+          ${ the_court.number }
           % endif
       - docket_number: ${ docket_number }
       - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
