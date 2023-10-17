@@ -609,6 +609,16 @@ fields:
     datatype: currency
     show if: is_additional_amount_new
 ---
+variable name: benefit_types
+data: !!omap
+  - social_security: Social Security
+  - veterans_administration: Veteran's Administration
+  - railroad_retirement: Railroad Retirement
+  - other: Other
+---
+objects:
+  - benefit_types_ordered: DAOrderedDict.using(elements={**benefit_types}, auto_gather=False, gathered=True)
+---
 question: |
   In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
 subquestion: |
@@ -623,11 +633,8 @@ fields:
     datatype: yesnoradio
   - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
     datatype: radio
-    choices:
-      - Social Security: social_security
-      - Veteran's Administration: veterans_administration
-      - Railroad Retirement: railroad_retirement
-      - Other: other
+    code: |
+      benefit_types_ordered
     show if: asking_for_payer_benefits_credit
   - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: child_benefit_amount
     datatype: currency
@@ -713,7 +720,9 @@ question: |
 subquestion: |
   This tool can put "*/s/ ${ users[0] }*" where you would sign your name so you do not have to sign the form by hand. The court will accept this as your signature.
 
-  Would you like to add your electronic signature to your form? 
+  If you plan to e-file, you may want to add your electronic signature, otherwise you will need to print your forms, sign them by hand, and then scan them.
+
+  ${ collapse_template(efiling_info_template) }
 fields:
   - Would you like to add your electronic signature to your form?: esign
     datatype: yesnoradio
@@ -727,7 +736,7 @@ subquestion: |
   
   View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
 
-  ${ action_button_html(url_action('review_simpmotion'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_form'), label='Edit answers', color='info') }
   
   ${ al_user_bundle.download_list_html() }
 
@@ -829,18 +838,28 @@ fields:
   - code: |
       children[i].name_fields()
 ---
+include:
+  - review.yml
+---
+#######################################################
+##### Documents 
+#######################################################
 objects:
   - mrcs_instructions: ALDocument.using(title="Instructions", filename="Instructions.docx", enabled=True, has_addendum=False)
-  - mrcs_attachment: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx", enabled=True)
   - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", enabled=True, has_addendum=False)
   - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", enabled=True, has_addendum=False)
+---
+objects:
+  - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
 ---
 attachment:
-  variable name: mrcs_attachment.addendum
+  variable name: mrcs_attachment_addendum[i]
   docx template file: Motion Regarding Support Addendum.docx
 ---
 code: |
@@ -849,98 +868,136 @@ code: |
   # Should just be a DOCX template, wrapped with a bundle for the mrcs_attachment.
   mrcs_attachment.overflow_fields.gathered = True
 ---
-attachments:
-  - name: Motion Regarding Support Instructions
-    filename: Instructions
-    variable name: mrcs_instructions[i]
-    skip undefined: True
-    docx template file: mrcs_next_steps.docx
-  - name: Motion Regarding Support Attachment
-    filename: Motion Regarding Support - FOC 50
-    variable name: mrcs_attachment[i]
-    skip undefined: True
-    pdf template file: Motion Regarding Support - FOC 50.pdf
-    editable: False
-    fields:
-      - trial_court_circuit: |
+attachment:
+  name: Motion Regarding Support Instructions
+  filename: Instructions
+  variable name: mrcs_instructions[i]
+  skip undefined: True
+  docx template file: mrcs_next_steps.docx
+---
+attachment:
+  name: Motion Regarding Support Attachment
+  filename: Motion Regarding Support - FOC 50
+  variable name: mrcs_attachment_main[i]
+  skip undefined: True
+  pdf template file: Motion Regarding Support - FOC 50.pdf
+  editable: False
+  fields:
+    - trial_court_circuit: |
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-      - trial_court_district: |
+    - trial_court_district: |
           % if the_court.type == 'district':
           ${ the_court.number }
           % endif
-      - docket_number: ${ docket_number }
-      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
-      - trial_court_phone_number: ${ the_court.phone }
-      - plaintiff_is_moving_party: ${ user_started_case }
-      - defendant_is_moving_party: ${ not user_started_case }
-      - third_party_is_moving_party: False
-      - plaintiffs: ${ plaintiffs }
-      - defendants: ${ defendants }
-      - third_parties: ""
-      - judgment_entered: ${ has_existing_support_order }
-      - judgment_entered_date: ${ recent_judgment_date }
-      - no_support_order: ${ not has_existing_support_order }
-      # TODO(#5): is this always true?
-      - paid_support_costs: True
-      - plaintiff_pays_support: ${ who_paid == "plaintiff" }
-      - defendant_pays_support:  ${ who_paid == "defendant" }
-      - support_amount: ${ subtotal_amount }
-      - paid_child_care: ${ paid_child_care }
-      - plaintiff_pays_care: ${ paid_child_care and who_paid == "plaintiff" }
-      - defendant_pays_care: ${ paid_child_care and who_paid == "defendant" }
-      - child_care_amount: ${ child_care_amount if paid_child_care else "" }
-      - paid_medical_costs: ${ paid_medical_costs }
-      - plaintiff_pays_medical: ${ paid_medical_costs and who_paid == "plaintiff" }
-      - defendant_pays_medical: ${ paid_medical_costs and who_paid == "defendant" }
-      - medical_care_amount: ${ medical_care_amount if paid_medical_costs else "" }
-      - conditions_have_changed:
-      - other_parties: ${ other_parties }
-      - is_new_agreement: ${ agreed_on_who_pays }
-      - is_new_agreement__2: ${ agreed_on_who_pays }
-      - signature_date: ${ signature_date if esign else "" }
-      - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
-      #- judge_name: ${ judge.name if has_hearing_info else "" }
-      #- judge_bar_number: ${ judge_bar_number if has_hearing_info else "" }
-      #- hearing_date: ${ format_date(hearing_date) if has_hearing_info else "" }
-      #- hearing_time: ${ hearing_time if has_hearing_info else "" }
-      #- hearing_address_on_one_line: ${ hearing_address_on_one_line if has_hearing_info else "" }
-      - service_signature_date: 
-      - service_signature:
-      # Unused button : ___instructions_link____
-  - name: Uniform Child Support Order
-    variable name: mrcs_foc10[i]
-    skip undefined: True
-    editable: True
-    pdf template file: Uniform Child Support Order - FOC 10.pdf
-    fields:
-      - trial_court_circuit: |
+    - docket_number: ${ docket_number }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - trial_court_phone_number: ${ the_court.phone }
+    - plaintiff_is_moving_party: ${ user_started_case }
+    - defendant_is_moving_party: ${ not user_started_case }
+    - third_party_is_moving_party: False
+    - plaintiffs: |
+          ${ plaintiffs }  
+          ${ plaintiffs[0].address.block() }
+    - defendants: |
+          ${ defendants }  
+          ${ defendants[0].address.block() }
+    - third_parties: ""
+    - judgment_entered: ${ has_existing_support_order }
+    - judgment_entered_date: ${ recent_judgment_date }
+    - no_support_order: ${ not has_existing_support_order }
+    # TODO(#5): is this always true?
+    - paid_support_costs: True
+    - plaintiff_pays_support: ${ who_paid == "plaintiff" }
+    - defendant_pays_support:  ${ who_paid == "defendant" }
+    - support_amount: ${ thousands(subtotal_amount, show_decimals=True) }
+    - paid_child_care: ${ paid_child_care }
+    - plaintiff_pays_care: ${ paid_child_care and who_paid == "plaintiff" }
+    - defendant_pays_care: ${ paid_child_care and who_paid == "defendant" }
+    - child_care_amount: ${ thousands(child_care_amount if paid_child_care else "", show_decimals=True) }
+    - paid_medical_costs: ${ paid_medical_costs }
+    - plaintiff_pays_medical: ${ paid_medical_costs and who_paid == "plaintiff" }
+    - defendant_pays_medical: ${ paid_medical_costs and who_paid == "defendant" }
+    - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) }
+    - conditions_have_changed: ${ have_circumstances_changed }
+    - other_parties: ${ other_parties if agreed_on_who_pays else "" }
+    - is_new_agreement: ${ agreed_on_who_pays }
+    - is_new_agreement__2: ${ agreed_on_who_pays }
+    - signature_date: ${ signature_date if esign else "" }
+    - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
+    #- judge_name: ${ judge.name if has_hearing_info else "" }
+    #- judge_bar_number: ${ judge_bar_number if has_hearing_info else "" }
+    #- hearing_date: ${ format_date(hearing_date) if has_hearing_info else "" }
+    #- hearing_time: ${ hearing_time if has_hearing_info else "" }
+    #- hearing_address_on_one_line: ${ hearing_address_on_one_line if has_hearing_info else "" }
+    - service_signature_date: 
+    - service_signature:
+    # Unused button : ___instructions_link____
+---
+attachment:
+  name: Uniform Child Support Order
+  variable name: mrcs_foc10[i]
+  skip undefined: True
+  editable: True
+  pdf template file: Uniform Child Support Order - FOC 10.pdf
+  fields:
+    - trial_court_circuit: |
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-      - trial_court_district: |
+    - trial_court_district: |
           % if the_court.type == 'district':
           ${ the_court.number }
           % endif
-      - docket_number: ${ docket_number }
-      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
-      # TODO(brycew): continue here
-  - name: Uniform Child Support Order Deviation Addendum
-    variable name: mrcs_foc10d[i]
-    skip undefined: True
-    editable: True
-    pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
-    fields:
-      - trial_court_circuit: |
+    - CASE NO: ${ docket_number }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - trial_court_phone_number: ${ the_court.phone }
+    - plaintiffs: |
+          ${ plaintiffs }  
+          ${ plaintiffs[0].address.block() }
+    - defendants: |
+          ${ defendants }  
+          ${ defendants[0].address.block() }
+    - plaintiffs_attorney: 
+    - defendants_attorney: 
+    - children1: ${ children[0] }
+    - children2: ${ children[1] if len(children) > 1 else "" }
+    - children3: ${ children[2] if len(children) > 2 else "" }
+    - children4: ${ children[3] if len(children) > 3 else "" }
+    - children5: ${ children[4] if len(children) > 4 else "" }
+    - children6: ${ children[5] if len(children) > 5 else "" }
+    - children7: ${ children[6] if len(children) > 6 else "" }
+    # TODO(brycew): continue here
+---
+attachment:
+  name: Uniform Child Support Order Deviation Addendum
+  variable name: mrcs_foc10d[i]
+  skip undefined: True
+  editable: True
+  pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
+  fields:
+    - trial_court_circuit: |
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-      - trial_court_district: |
+    - trial_court_district: |
           % if the_court.type == 'district':
           ${ the_court.number }
           % endif
-      - docket_number: ${ docket_number }
-      - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
-      # TODO(brycew): continue here
+    - docket_number: ${ docket_number }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - CASE NO: ${ docket_number }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - trial_court_phone_number: ${ the_court.phone }
+    - plaintiffs: ${ plaintiffs }
+    - defendants: ${ defendants }
+    - children1: ${ children[0] }
+    - children2: ${ children[1] if len(children) > 1 else "" }
+    - children3: ${ children[2] if len(children) > 2 else "" }
+    - children4: ${ children[3] if len(children) > 3 else "" }
+    - children5: ${ children[4] if len(children) > 4 else "" }
+    - children6: ${ children[5] if len(children) > 5 else "" }
+    - children7: ${ children[6] if len(children) > 6 else "" }
+    # TODO(brycew): continue here
 

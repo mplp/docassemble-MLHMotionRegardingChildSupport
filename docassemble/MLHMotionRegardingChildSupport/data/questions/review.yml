@@ -1,0 +1,281 @@
+event: review_intro
+code: review_form
+---
+event: review_prior_case
+code: review_form
+---
+event: review_your_info
+code: review_form
+---
+event: review_other_info
+code: review_form
+---
+event: review_children_info
+code: review_form
+---
+event: review_prior_order
+code: review_form
+---
+event: review_agreement
+code: review_form
+---
+event: review_support_requested
+code: review_form
+---
+event: review_conclusion
+code: review_form
+---
+event: review_form
+id: |-
+  review screen
+
+question: |-
+  Review your answers
+
+review:
+  - Edit: |-
+      users.revisit
+    button: |-
+      **Users**
+
+      % for item in users:
+      - ${ item }
+      % endfor
+  - Edit: |-
+      other_parties.revisit
+    button: |-
+      **Other Parties**
+
+      % for item in other_parties:
+      - ${ item }
+      % endfor
+  - Edit: |-
+      children.revisit
+    button: |-
+      **Children**
+
+      % for item in children:
+      - ${ item }
+      % endfor
+  - Edit: |-
+      judge.revisit
+    button: |-
+      **Judge**
+
+      % for item in judge:
+      - ${ item }
+      % endfor
+  - Edit: |-
+      docket_number
+    button: |
+      **What is your case number?**
+
+      ${ showifdef('docket_number') }
+  - Edit: |-
+      has_existing_support_order
+    button: |
+      **Do you already have a child support order?**
+
+      Do you have a child support order in your case ${ docket_number }: ${ word(yesno(has_existing_support_order)) }
+
+      What date was the most recent judgment entered?: ${ showifdef('recent_judgment_date') }
+  - label: Edit
+    fields:
+      - user_ask_role
+      - who_paid
+      - who_pays_new
+    button: |
+      **What party are you in your existing case?**
+
+      ${ showifdef('user_ask_role') }
+  - Edit: |-
+      who_paid
+    button: |
+      **Who was ordered to pay support in the current support order?**
+
+      ${ showifdef('who_paid') }
+  - Edit: |-
+      subtotal_amount
+    button: |
+      **What is the subtotal amount on your current Uniform Child Support Order?**
+
+      ${ currency(showifdef('subtotal_amount')) }
+  - Edit: |-
+      paid_child_care
+    button: |
+      **Monthly child care costs**
+
+      Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+
+      How much in child care costs were they ordered to pay per month?: ${ currency(showifdef('child_care_amount')) }
+  - Edit: |-
+      paid_medical_costs
+    button: |
+      **Monthly Ordinary medical costs**
+
+      Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+
+      How much in ordinary medical costs were they ordered to pay per month?: ${ currency(showifdef('medical_care_amount')) }
+  - Edit: |-
+      agreed_on_who_pays
+    button: |
+      **Have you and ${ other_parties } agreed on who should pay support and how much?**
+
+      ${ word(yesno(agreed_on_who_pays)) }
+  - Edit: |-
+      who_pays_new
+    button: |
+      % if agreed_on_who_pays:
+      **In your agreement with ${ other_parties }, who are you asking the court to pay support?**
+      % else:
+      **Who are you asking the court to pay support?**
+      % endif
+
+      ${ showifdef('who_pays_new') }
+  - Edit: |-
+      base_support_new
+    button: |
+      % if agreed_on_who_pays:
+      **In the agreement, how much per month are you asking the court to order for these costs?**
+      % else:
+      **How much per month are you asking the court to order for these costs?**
+      % endif
+
+      How much for base support?: ${ currency(showifdef('base_support_new')) }
+
+      How much for child care costs?: ${ currency(showifdef('child_care_new')) }
+
+      How much for ordinary medical costs?: ${ currency(showifdef('ordinary_medical_new')) }
+  - Edit: |-
+      is_additional_amount_new
+    button: |
+      % if agreed_on_who_pays:
+      **In the agreement, are you asking the court to order an additional amount each month for other expenses?**
+      % else:
+      **Are you asking the court to order an additional amount each month for other expenses?**
+      % endif
+
+      ${ word(yesno(is_additional_amount_new)) }
+
+      Complete the following sentence. 'The reason for the other expenses is as follows:': ${ showifdef('additional_amount_reason') }
+
+      How much per month are you asking the court to order for the other expenses?: ${ showifdef('additional_amount_new') }
+  - Edit: |-
+      asking_for_payer_benefits_credit
+    button: |
+      **In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
+
+      Are you asking for the court to give ${ who_pays_new } a credit?: ${ word(yesno(asking_for_payer_benefits_credit)) }
+
+      How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: ${ showifdef('child_benefit_amount') }
+  - Edit: |-
+      have_circumstances_changed
+    button: |
+      **Have circumstances changed?**
+
+      ${ word(yesno(have_circumstances_changed)) }
+  - Edit: |-
+      circumstance_changes
+    button: |
+      **How have your circumstances changed?**
+
+      ${ showifdef('circumstance_changes') }
+    show if: have_circumstances_changed
+  - Edit: |-
+      esign
+    button: |
+      **Electronic Signature**
+
+      Would you like to add your electronic signature to your form?: ${ word(yesno(esign)) }
+  - Edit: |-
+      has_hearing_info
+    button: |
+      **Motion Hearing Information**
+
+      ${ word(yesno(has_hearing_info)) }
+  - Edit: |-
+      hearing_date
+    button: |
+      **When will the hearing be?**
+
+      Date of hearing: ${ showifdef('hearing_date') }
+
+      Hearing Time: ${ showifdef('hearing_time') }
+  - Edit: |-
+      hearing_at_court
+    button: |
+      **Where will the hearing be?**
+
+      Will the hearing be in person at the courthouse?: ${ word(yesno(hearing_at_court)) }
+
+      * Type the address if it will be at a physical location. * If the hearing will be online or by phone, briefly explain.: ${ showifdef('hearing_address_on_one_line') }
+  - Edit: |-
+      judge.name
+    button: |
+      **What judge will hear your motion?**
+
+      Judge's name: ${ showifdef('judge.name') }
+
+      Judge's bar number: ${ showifdef('judge_bar_number') }
+
+---
+continue button field: users.revisit
+id: revisit users
+question: Edit your answers about yourself
+subquestion: |
+  ${ users.table }
+---
+continue button field: other_parties.revisit
+id: revisit other_parties
+question: |
+  Edit your answers about the other side in your case
+subquestion: |
+  ${ other_parties.table }
+---
+continue button field: |-
+  children.revisit
+id: |-
+  revisit children
+question: |-
+  Edit your answers about Children
+subquestion: |
+  ${ children.table }
+
+  ${ children.add_action() }
+---
+continue button field: |
+  judge.revisit
+id: revisit judge
+question: |-
+  Edit your answers about Judge
+subquestion: |-
+  ${ judge.table }
+   
+  ${ judge.add_action() }
+---
+table: children.table
+rows: children
+columns:
+  - Name: |
+      row_item.name if defined('row_item.name.first') else ''
+  - Birthdate: |
+      row_item.birthdate if hasattr(row_item, 'birthdate') else ''
+edit:
+  - name.first
+  - birthdate
+---
+generic object: ALPeopleList
+table: x.table
+rows: x
+columns:
+  - Name: |
+      row_item.name if defined('row_item.name.first') else ''
+  - Address: |
+      row_item.address if defined('row_item.address.address') else ''
+  - Phone number: |
+      row_item.phone_numbers()
+edit:
+  - name.first
+  - address.address
+  - phone_number
+delete buttons: False
