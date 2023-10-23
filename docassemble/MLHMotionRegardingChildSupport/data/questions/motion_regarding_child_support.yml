@@ -22,7 +22,7 @@ code: |
   interview_short_title = "Motion Regarding Child Support"
 ---
 code: |
-  github_repo_name = "docasemble-MLHMotionRegardingChildSupport"
+  github_repo_name = "docassemble-MLHMotionRegardingChildSupport"
 ---
 code: |
   al_form_type = "existing_case"
