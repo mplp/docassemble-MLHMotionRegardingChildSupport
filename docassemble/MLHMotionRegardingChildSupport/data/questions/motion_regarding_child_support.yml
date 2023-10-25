@@ -322,6 +322,9 @@ content: |
 
   If you have a different type of support order, the date that the order was entered is usually found at the end of the order, near the judge’s signature.
 ---
+code: |
+  court_index = next(court_list.filter_courts_by_2([county_choice], ['circuit'], column_1='address_county', column_2='type'))[0]
+---
 id: is_parent
 question: |
   Are you the parent of the child or children this Motion Regarding Support is for?
