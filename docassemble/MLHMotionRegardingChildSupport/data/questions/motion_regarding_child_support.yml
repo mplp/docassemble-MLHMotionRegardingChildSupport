@@ -111,7 +111,6 @@ code: |
   nav.set_section("review_prior_case")
   if not has_existing_case:
     existing_case_kickout
-  speak_to_lawyer
   what_you_will_need
   docket_number
   has_existing_support_order
@@ -198,6 +197,25 @@ subquestion: |
   * Have a Michigan judgment of divorce or separate maintenance, or a paternity or custody order which didn’t include child support, and want to ask the court to order child support in that case now.
 continue button field: intro_screen
 ---
+id: MLH intro landing
+question: |
+  Need more help?
+subquestion: |
+  This tool will help you prepare forms for your legal issue without a lawyer.
+  
+  You may want to speak to a lawyer if any of these apply to you:
+
+  * You have a child support order **from another state** but you now live in Michigan.
+      * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
+  * There is a **bench warrant** against you for **non-payment of support**. This could happen if:
+      * A motion to show cause was filed against you for non-payment of support,
+      * You did not appear at the show cause hearing, and
+      * The court issued a bench warrant against you.
+  * You have any questions or aren't sure what to do.
+
+  ${ MLH_GUIDE_FULL }
+continue button field: MLH_intro_landing
+---
 id: has_existing_case
 question: |
   Do you have an existing Michigan family court case?
@@ -219,21 +237,6 @@ subquestion: |
 buttons:
   - Exit: exit
     url: https://michiganlegalhelp.org
----
-id: You May Want to Speak with a Lawyer
-question: |
-  You May Want to Speak with a Lawyer
-subquestion: |
-  You may want to speak to a lawyer if:
-
-  * You have a child support order from another state but you now live in Michigan
-      * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
-  * A motion to show cause was filed against you for non-payment of support,
-  * You did not appear at the show cause hearing, and
-  * The court issued a bench warrant against you.
-
-  You can use the [Guide to Legal Help](https://michiganlegalhelp.org/guide-to-legal-help) to find a lawyer or legal services office in your area if you want more help.
-continue button field: speak_to_lawyer
 ---
 id: what_you_will_need
 question: |
