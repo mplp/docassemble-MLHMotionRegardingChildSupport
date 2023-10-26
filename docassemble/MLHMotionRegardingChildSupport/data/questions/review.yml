@@ -74,8 +74,7 @@ review:
   - label: Edit
     fields:
       - user_ask_role
-      - who_paid
-      - who_pays_new
+      - which_side_paid
     button: |
       **What party are you in your existing case?**
 
@@ -95,12 +94,20 @@ review:
     button: |
       **What date was the most recent judgment entered?**: ${ showifdef('recent_judgment_date') }
     show if: has_existing_support_order
-  - Edit: |-
-      who_paid
+  - label: Edit
+    fields:
+      - who_paid
+      - which_side_paid
     button: |
       **Who was ordered to pay support in the current support order?**
 
-      ${ showifdef('who_paid') }
+      % if defined('who_paid'):
+      % if who_paid == "user":
+      ${ users[0] } (you)
+      % else:
+      ${ other_parties[0] }
+      % endif
+      % endif
   - Edit: |-
       subtotal_amount
     button: |
@@ -154,8 +161,10 @@ review:
       ---
 
       <h2 class="h3">Support Requested Information</h2>
-  - Edit: |-
-      who_pays_new
+  - label: Edit
+    fields:
+      - who_pays_new
+      - which_side_pays_new
     button: |
       % if agreed_on_who_pays:
       **In your agreement with ${ other_parties }, who are you asking the court to pay support?**
@@ -163,7 +172,13 @@ review:
       **Who are you asking the court to pay support?**
       % endif
 
-      ${ showifdef('who_pays_new') }
+      % if defined('who_pays_new'):
+      % if who_pays_new == "user":
+      ${ users[0] } (you)
+      % else:
+      ${ other_parties[0] }
+      % endif
+      % endif
   - Edit: |-
       base_support_new
     button: |
