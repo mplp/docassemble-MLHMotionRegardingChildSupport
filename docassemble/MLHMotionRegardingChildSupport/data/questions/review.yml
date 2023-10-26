@@ -71,14 +71,6 @@ review:
       **What is your case number?**
 
       ${ showifdef('docket_number') }
-  - Edit: |-
-      has_existing_support_order
-    button: |
-      **Do you already have a child support order?**
-
-      Do you have a child support order in your case ${ docket_number }: ${ word(yesno(has_existing_support_order)) }
-
-      What date was the most recent judgment entered?: ${ showifdef('recent_judgment_date') }
   - label: Edit
     fields:
       - user_ask_role
@@ -88,6 +80,21 @@ review:
       **What party are you in your existing case?**
 
       ${ showifdef('user_ask_role') }
+  - note: |
+      ---
+
+      <h2 class="h3">Prior Support Order</h2>
+  - label: Edit
+    fields:
+      - has_existing_support_order
+      - recompute:
+        - set_all_existing_support
+    button: |
+      **Do you have a child support order in your case ${ docket_number }**: ${ word(yesno(has_existing_support_order)) }
+  - Edit: recent_judgment_date
+    button: |
+      **What date was the most recent judgment entered?**: ${ showifdef('recent_judgment_date') }
+    show if: has_existing_support_order
   - Edit: |-
       who_paid
     button: |
