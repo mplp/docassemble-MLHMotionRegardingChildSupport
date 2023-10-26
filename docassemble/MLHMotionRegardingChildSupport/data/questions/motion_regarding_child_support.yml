@@ -431,9 +431,8 @@ question: |
   What is ${x}'s phone number?
 fields:
   - Phone: x.phone_number
-    required: False
     show if:
-      variable: users[0].no_phone_number
+      variable: x.no_phone_number
       is: False
   - I do not know ${x}'s phone number: x.no_phone_number
     required: False
@@ -985,11 +984,11 @@ attachment:
     - plaintiffs: |
           ${ plaintiffs }  
           ${ plaintiffs[0].address.block() }  
-          ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
+          ${ "Does not have phone" if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
     - defendants: |
           ${ defendants }  
           ${ defendants[0].address.block() }  
-          ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
+          ${ "Does not have phone" if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - third_parties: ""
     - judgment_entered: ${ has_existing_support_order }
     - judgment_entered_date: ${ recent_judgment_date }
