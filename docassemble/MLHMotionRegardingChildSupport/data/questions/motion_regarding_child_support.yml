@@ -492,9 +492,19 @@ question: |
   Who was ordered to pay support in the current support order?
 fields:
   - no label: who_paid
+    datatype: radio
     choices:
-      - Plaintiff (${ plaintiffs[0] }): plaintiff
-      - Defendant (${ defendants[0] }): defendant
+      - ${ users[0] } (you): user
+      - ${ other_parties[0] }: other_party 
+---
+depends on:
+  - who_paid
+  - user_started_case
+code: |
+  if (who_paid == "user" and user_started_case) or (who_paid == "other_party" and not user_started_case):
+    which_side_paid = "plaintiff" 
+  else:
+    which_side_paid = "defendant"
 ---
 id: subtotal amount
 question: |
@@ -519,9 +529,10 @@ question: |
 subquestion: |
   ${ what_is_child_care.content }
 fields:
-  - Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: paid_child_care
+  - ${ "Were you" if who_paid == "user" else f"Was {other_parties[0].name.familiar()}" } ordered to pay monthly child care costs?: paid_child_care
     datatype: yesnoradio
-  - How much in child care costs were they ordered to pay per month?: child_care_amount
+  - How much in child care costs were ${ "you" if who_paid == "user" else "they" } ordered to pay per month?: child_care_amount
+    label above field: True
     datatype: currency
     show if: paid_child_care
 ---
@@ -578,9 +589,19 @@ question: |
   % endif
 fields:
   - no label: who_pays_new
+    datatype: radio
     choices:
-      - Plaintiff (${ plaintiffs[0] }): plaintiff
-      - Defendant (${ defendants[0] }): defendant
+      - ${ users[0] } (you): user
+      - ${ defendants[0] }: other_party
+---
+depends on:
+  - who_pays_new
+  - user_started_case
+code: |
+  if (who_pays_new == "user" and user_started_case) or (who_pays_new == "other_party" and not user_started_case):
+    which_side_pays_new = "plaintiff"
+  else:
+    which_side_pays_new = "defendant"
 ---
 # TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
 question: |
@@ -639,14 +660,15 @@ question: |
   % endif
   you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
 subquestion: |
-  For example, the ${ who_pays_new } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
+  For example, ${ "you" if who_pays_new == "user" else other_parties[0] } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
 
   If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
   Veteran’s Administration, or Railroad Retirement, his or her dependent children may also get benefits based on the payer’s work record. If this is so,
   the court will count the children’s benefits as a credit towards payment of the parent’s child support obligation. In other words, the amount of dependent
   benefits should be subtracted from the support amount.
 fields:
-  - Are you asking for the court to give ${ who_pays_new } a credit?: asking_for_payer_benefits_credit
+  - Are you asking for the court to give ${ "you" if who_pays_new == "user" else other_parties[0] } a credit?: asking_for_payer_benefits_credit
+    label above field: True
     datatype: yesnoradio
   - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
     datatype: radio
@@ -925,16 +947,16 @@ attachment:
     - judgment_entered_date: ${ recent_judgment_date }
     - no_support_order: ${ not has_existing_support_order }
     - paid_support_costs: ${ has_existing_support_order }
-    - plaintiff_pays_support: ${ has_existing_support_order and who_paid == "plaintiff" }
-    - defendant_pays_support:  ${ has_existing_support_order and who_paid == "defendant" }
+    - plaintiff_pays_support: ${ has_existing_support_order and which_side_paid == "plaintiff" }
+    - defendant_pays_support:  ${ has_existing_support_order and which_side_paid == "defendant" }
     - support_amount: ${ thousands(subtotal_amount, show_decimals=True) if has_existing_support_order else "" }
     - paid_child_care: ${ has_existing_support_order and paid_child_care }
-    - plaintiff_pays_care: ${ has_existing_support_order and paid_child_care and who_paid == "plaintiff" }
-    - defendant_pays_care: ${ has_existing_support_order and paid_child_care and who_paid == "defendant" }
+    - plaintiff_pays_care: ${ has_existing_support_order and paid_child_care and which_side_paid == "plaintiff" }
+    - defendant_pays_care: ${ has_existing_support_order and paid_child_care and which_side_paid == "defendant" }
     - child_care_amount: ${ thousands(child_care_amount if paid_child_care else "", show_decimals=True) if has_existing_support_order else "" }
     - paid_medical_costs: ${ has_existing_support_order and paid_medical_costs }
-    - plaintiff_pays_medical: ${ has_existing_support_order and paid_medical_costs and who_paid == "plaintiff" }
-    - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and who_paid == "defendant" }
+    - plaintiff_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "plaintiff" }
+    - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "defendant" }
     - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) if has_existing_support_order else "" }
     - conditions_have_changed: ${ have_circumstances_changed }
     - other_parties: ${ other_parties if agreed_on_who_pays else "" }
