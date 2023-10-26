@@ -138,7 +138,7 @@ code: |
   set_all_existing_support
 
   nav.set_section("review_agreement")
-  if not agreed_on_who_pays:
+  if has_existing_support_order and not agreed_on_who_pays:
     if not have_circumstances_changed:
       circumstances_kickout
     circumstance_changes
