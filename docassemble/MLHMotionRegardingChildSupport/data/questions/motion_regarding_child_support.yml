@@ -303,16 +303,20 @@ content: |
 ---
 id: existing child support order
 question: |
-  Do you already have a child support order?
+  Do you already have a child support order in your case (${ docket_number })?
 fields:
-  - Do you have a child support order in your case ${ docket_number }: has_existing_support_order
-    datatype: yesnoradio
-  - note: |
-      ${ collapse_template(where_date_uniform_child_order) }
-    show if: has_existing_support_order
-  - What date was the most recent judgment entered?: recent_judgment_date
+  - no label: has_existing_support_order
+    datatype: radio
+    choices:
+      - Yes, I have a child support order: True
+      - No, I do not have a child support order: False
+  - When was the most recent judgment entered?: recent_judgment_date
+    label above field: True
     datatype: date
     max: ${ today() }
+    show if: has_existing_support_order
+  - note: |
+      ${ collapse_template(where_date_uniform_child_order) }
     show if: has_existing_support_order
 ---
 template: where_date_uniform_child_order
@@ -548,16 +552,21 @@ subquestion: |
   Ordinary medical costs are different than extraordinary uninsured health case costs, which are
   listed in a different part of the Uniform Child Support Order.
 fields:
-  - Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: paid_medical_costs
+  - ${ "Were you" if who_paid == "user" else f"Was {other_parties[0].name.familiar()}" } ordered to pay ordinary medical costs?: paid_medical_costs
     datatype: yesnoradio
-  - How much in ordinary medical costs were they ordered to pay per month?: medical_care_amount
+  - How much in ordinary medical costs were ${ "you" if who_paid == "user" else "they" } ordered to pay per month?: medical_care_amount
+    label above field: True
+    datatype: currency
     show if: paid_medical_costs
 ---
 question: |
   Have you and ${ other_parties } agreed on who should pay support and how much?
 fields:
   - no label: agreed_on_who_pays
-    datatype: yesnoradio
+    datatype: radio
+    choices: 
+      - Yes, we have agreed: True
+      - No, we have not agreed: False
 ---
 question: |
   Child Support Formula
@@ -639,6 +648,7 @@ fields:
     input type: area
     show if: is_additional_amount_new
   - How much per month are you asking the court to order for the other expenses?: additional_amount_new
+    label above field: True
     datatype: currency
     show if: is_additional_amount_new
 ---
@@ -671,11 +681,13 @@ fields:
     label above field: True
     datatype: yesnoradio
   - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
+    label above field: True
     datatype: radio
     code: |
       benefit_types_ordered
     show if: asking_for_payer_benefits_credit
   - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: child_benefit_amount
+    label above field: True
     datatype: currency
     show if: asking_for_payer_benefits_credit
 ---
@@ -686,7 +698,6 @@ subquestion: |
   The court may only change the amount of child support if there has been a change in circumstances. Examples of changes in circumstances are:
 
   ${ circumstance_examples.content }
-
 fields:
   - Have circumstances changed?: have_circumstances_changed
     datatype: yesnoradio
