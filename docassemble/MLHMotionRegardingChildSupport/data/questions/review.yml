@@ -114,7 +114,9 @@ review:
 
       Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
 
+      % if paid_child_care:
       How much in child care costs were they ordered to pay per month?: ${ currency(showifdef('child_care_amount')) }
+      % endif
   - Edit: |-
       paid_medical_costs
     button: |
@@ -122,13 +124,36 @@ review:
 
       Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
 
+      % if paid_medical_costs:
       How much in ordinary medical costs were they ordered to pay per month?: ${ currency(showifdef('medical_care_amount')) }
+      % endif
+  - note: |
+      ---
+
+      <h2 class="h3">Agreement Information</h2>
   - Edit: |-
       agreed_on_who_pays
     button: |
       **Have you and ${ other_parties } agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
+  - Edit: |-
+      have_circumstances_changed
+    button: |
+      **Have circumstances changed?**
+
+      ${ word(yesno(have_circumstances_changed)) }
+  - Edit: |-
+      circumstance_changes
+    button: |
+      **How have your circumstances changed?**
+
+      ${ showifdef('circumstance_changes') }
+    show if: have_circumstances_changed
+  - note: |
+      ---
+
+      <h2 class="h3">Support Requested Information</h2>
   - Edit: |-
       who_pays_new
     button: |
@@ -164,30 +189,25 @@ review:
 
       ${ word(yesno(is_additional_amount_new)) }
 
+      % if is_additional_amount_new:
       Complete the following sentence. 'The reason for the other expenses is as follows:': ${ showifdef('additional_amount_reason') }
 
       How much per month are you asking the court to order for the other expenses?: ${ showifdef('additional_amount_new') }
+      % endif
   - Edit: |-
       asking_for_payer_benefits_credit
     button: |
+      % if agreed_on_who_pays:
       **In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
+      % else:
+      **Are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
+      % endif
 
       Are you asking for the court to give ${ who_pays_new } a credit?: ${ word(yesno(asking_for_payer_benefits_credit)) }
 
+      % if asking_for_payer_benefits_credit:
       How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: ${ showifdef('child_benefit_amount') }
-  - Edit: |-
-      have_circumstances_changed
-    button: |
-      **Have circumstances changed?**
-
-      ${ word(yesno(have_circumstances_changed)) }
-  - Edit: |-
-      circumstance_changes
-    button: |
-      **How have your circumstances changed?**
-
-      ${ showifdef('circumstance_changes') }
-    show if: have_circumstances_changed
+      % endif
   - Edit: |-
       esign
     button: |
