@@ -290,7 +290,7 @@ subquestion: |
 
   ${ collapse_template(where_case_number) }
 fields:
-  - no label: docket_number
+  - Case number: docket_number
     maxlength: 25
 ---
 template: where_case_number
