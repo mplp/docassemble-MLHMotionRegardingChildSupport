@@ -920,8 +920,7 @@ attachment:
     - judgment_entered: ${ has_existing_support_order }
     - judgment_entered_date: ${ recent_judgment_date }
     - no_support_order: ${ not has_existing_support_order }
-    # TODO(#5): is this always true?
-    - paid_support_costs: True
+    - paid_support_costs: ${ has_existing_support_order }
     - plaintiff_pays_support: ${ who_paid == "plaintiff" }
     - defendant_pays_support:  ${ who_paid == "defendant" }
     - support_amount: ${ thousands(subtotal_amount, show_decimals=True) }
