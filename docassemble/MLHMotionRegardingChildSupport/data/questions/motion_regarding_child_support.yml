@@ -92,7 +92,7 @@ code: |
   children[i].complete = True
 ---
 sections:
-  - review_intro: "Indroduction"
+  - review_intro: "Introduction"
   - review_prior_case: "Prior Case Information"
   - review_your_info: "Your Information"
   - review_other_info: "Other Parent's Information"
@@ -186,14 +186,14 @@ code: |
 ---
 id: intro screen
 question: |
-  Welcome to Michigan Legal Help’s Do-It-Yourself Motion to Change or Get Child Support tool. 
+  Welcome to the Do-It-Yourself Motion to Change or Get Child Support tool
 subquestion: |
-  This tool can help you prepare the forms you need to file a *Motion Regarding Support in Michigan*.
+  This tool can help you prepare the forms to file a *Motion Regarding Support* in Michigan.
 
   This tool is only for parents who:
 
-  * Already have a child support order from a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to change the amount of child support; OR
-  * Have filed a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to enter a child support order; OR
+  * Already have a child support order from a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to change the amount of child support; **OR**
+  * Have filed a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to enter a child support order; **OR**
   * Have a Michigan judgment of divorce or separate maintenance, or a paternity or custody order which didn’t include child support, and want to ask the court to order child support in that case now.
 continue button field: intro_screen
 ---
@@ -269,7 +269,7 @@ question: |
 subquestion: |
   It should take you between ${ MLH_time_min } and ${ MLH_time_max } minutes to finish answering questions.
   After you answer all the questions, your personalized *Motion Regarding Support* will be ready to print.
-  You will also get a *Uniform Child Support Order* without any numbers filled in
+  You will also get a *Uniform Child Support Order* without any numbers filled in.
 
   Depending on your court, you may get a referral to the Friend of the Court, and they may prepare
   a recommended support order for you. You can also use the
@@ -581,30 +581,32 @@ fields:
 # TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
 question: |
   % if agreed_on_who_pays:
-  In the agreement, how much per month are you asking the court to order for these costs?
+  In the agreement, how
   % else:
-  How much per month are you asking the court to order for these costs?
+  How
   % endif
+  much per month are you asking the court to order for these costs?
 fields:
-  - How much for base support?: base_support_new
+  - Base support: base_support_new
     datatype: currency
     help: |
       Base support is the ordinary monthly child support amount, for the general care and needs of a child. 
-  - How much for child care costs?: child_care_new
+  - Child care costs: child_care_new
     datatype: currency
     help: |
       ${ what_is_child_care.content }
-  - How much for ordinary medical costs?: ordinary_medical_new
+  - Ordinary medical costs: ordinary_medical_new
     datatype: currency
     help: |
       Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 ---
 question: |
   % if agreed_on_who_pays:
-  In the agreement, are you asking the court to order an additional amount each month for other expenses?
+  In the agreement, are
   % else:
-  Are you asking the court to order an additional amount each month for other expenses?
+  Are
   % endif
+  you asking the court to order an additional amount each month for other expenses?
 fields:
   - no label: is_additional_amount_new
     datatype: yesnoradio
@@ -626,7 +628,12 @@ objects:
   - benefit_types_ordered: DAOrderedDict.using(elements={**benefit_types}, auto_gather=False, gathered=True)
 ---
 question: |
-  In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
+  % if agreed_on_who_pays:
+  In the agreement, are
+  % else:
+  Are
+  % endif
+  you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
 subquestion: |
   For example, the ${ who_pays_new } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
 
