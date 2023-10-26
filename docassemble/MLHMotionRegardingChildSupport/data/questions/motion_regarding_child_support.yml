@@ -135,12 +135,7 @@ code: |
   children.gather()
 
   nav.set_section("review_prior_order")
-  if has_existing_support_order:
-    current_child_support_signpost
-    who_paid
-    subtotal_amount
-    paid_child_care
-    paid_medical_costs
+  set_all_existing_support
 
   nav.set_section("review_agreement")
   if not agreed_on_who_pays:
@@ -183,6 +178,15 @@ code: |
       },
   )
   motion_child_support_download
+---
+code: |
+  if has_existing_support_order:
+    current_child_support_signpost
+    who_paid
+    subtotal_amount
+    paid_child_care
+    paid_medical_costs
+  set_all_existing_support = True
 ---
 id: intro screen
 question: |
@@ -921,17 +925,17 @@ attachment:
     - judgment_entered_date: ${ recent_judgment_date }
     - no_support_order: ${ not has_existing_support_order }
     - paid_support_costs: ${ has_existing_support_order }
-    - plaintiff_pays_support: ${ who_paid == "plaintiff" }
-    - defendant_pays_support:  ${ who_paid == "defendant" }
-    - support_amount: ${ thousands(subtotal_amount, show_decimals=True) }
-    - paid_child_care: ${ paid_child_care }
-    - plaintiff_pays_care: ${ paid_child_care and who_paid == "plaintiff" }
-    - defendant_pays_care: ${ paid_child_care and who_paid == "defendant" }
-    - child_care_amount: ${ thousands(child_care_amount if paid_child_care else "", show_decimals=True) }
-    - paid_medical_costs: ${ paid_medical_costs }
-    - plaintiff_pays_medical: ${ paid_medical_costs and who_paid == "plaintiff" }
-    - defendant_pays_medical: ${ paid_medical_costs and who_paid == "defendant" }
-    - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) }
+    - plaintiff_pays_support: ${ has_existing_support_order and who_paid == "plaintiff" }
+    - defendant_pays_support:  ${ has_existing_support_order and who_paid == "defendant" }
+    - support_amount: ${ thousands(subtotal_amount, show_decimals=True) if has_existing_support_order else "" }
+    - paid_child_care: ${ has_existing_support_order and paid_child_care }
+    - plaintiff_pays_care: ${ has_existing_support_order and paid_child_care and who_paid == "plaintiff" }
+    - defendant_pays_care: ${ has_existing_support_order and paid_child_care and who_paid == "defendant" }
+    - child_care_amount: ${ thousands(child_care_amount if paid_child_care else "", show_decimals=True) if has_existing_support_order else "" }
+    - paid_medical_costs: ${ has_existing_support_order and paid_medical_costs }
+    - plaintiff_pays_medical: ${ has_existing_support_order and paid_medical_costs and who_paid == "plaintiff" }
+    - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and who_paid == "defendant" }
+    - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) if has_existing_support_order else "" }
     - conditions_have_changed: ${ have_circumstances_changed }
     - other_parties: ${ other_parties if agreed_on_who_pays else "" }
     - is_new_agreement: ${ agreed_on_who_pays }
