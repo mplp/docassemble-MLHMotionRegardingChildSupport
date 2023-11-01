@@ -315,9 +315,9 @@ columns:
   - Address: |
       row_item.address if defined('row_item.address.address') else ''
   - Phone number: |
-      row_item.phone_numbers()
+      row_item.phone_number if defined('row_item.no_phone_number') and not row_item.no_phone_number else ''
 edit:
   - name.first
   - address.address
-  - phone_number
+  - no_phone_number
 delete buttons: False

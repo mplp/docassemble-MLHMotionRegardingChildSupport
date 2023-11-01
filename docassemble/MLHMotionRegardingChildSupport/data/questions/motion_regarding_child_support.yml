@@ -429,11 +429,46 @@ id: persons contact information
 generic object: ALIndividual
 question: |
   What is ${x}'s phone number?
-subquestion: |
-  If you don't know, you can skip this question
 fields:
   - Phone: x.phone_number
+    show if:
+      variable: x.no_phone_number
+      is: False
+  - I do not know ${x}'s phone number: x.no_phone_number
     required: False
+    datatype: yesno
+---
+id: your contact information
+question: |
+  What is your phone number?
+subquestion: |
+  ${ collapse_template(why_contact_info_needed_template) }
+fields:  
+  - Phone number: users[0].phone_number
+    show if:
+      variable: users[0].no_phone_number
+      is: False
+  - I do not have a contact number: users[0].no_phone_number
+    required: False
+    datatype: yesno
+---
+template: why_contact_info_needed_template
+subject: Why do I need to give my phone number?
+content: |
+  The court must be able to call you. So you have to give them a way to do this.
+
+  If you do not have a phone number, you can give someone else's number
+  as long as they can pass on messages to you. You should tell this person
+  that you are using their number on your court forms.
+---
+generic object: ALIndividual
+code: |
+  if x.no_phone_number:
+    x.phone_number = ""
+---
+code: |
+  if users[0].no_phone_number:
+    users[0].phone_number = "Does not have phone"
 ---
 id: how many children
 question: |
@@ -949,10 +984,12 @@ attachment:
     - third_party_is_moving_party: False
     - plaintiffs: |
           ${ plaintiffs }  
-          ${ plaintiffs[0].address.block() }
+          ${ plaintiffs[0].address.block() }  
+          ${ plaintiffs[0].phone_number }
     - defendants: |
           ${ defendants }  
-          ${ defendants[0].address.block() }
+          ${ defendants[0].address.block() }  
+          ${ defendants[0].phone_number }
     - third_parties: ""
     - judgment_entered: ${ has_existing_support_order }
     - judgment_entered_date: ${ recent_judgment_date }
@@ -1004,10 +1041,12 @@ attachment:
     - trial_court_phone_number: ${ the_court.phone }
     - plaintiffs: |
           ${ plaintiffs }  
-          ${ plaintiffs[0].address.block() }
+          ${ plaintiffs[0].address.block() }  
+          ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
     - defendants: |
           ${ defendants }  
-          ${ defendants[0].address.block() }
+          ${ defendants[0].address.block() }  
+          ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - plaintiffs_attorney: 
     - defendants_attorney: 
     - children1: ${ children[0] }
