@@ -338,14 +338,20 @@ question: |
   Are you the parent of the child or children this Motion Regarding Support is for?
 fields:
   - no label: is_parent
-    datatype: yesnoradio
+    datatype: radio 
+    choices:
+      - Yes, I am the parent: True
+      - No, I am not the parent: False
 ---
 id: third_party_named
 question: |
   Is a third party (a non-parent) named in your existing family court case?
 fields:
   - no label: third_party_named
-    datatype: yesnoradio
+    datatype: radio
+    choices:
+      - Yes, there is a third party named in the case: True
+      - No, there are no third parties named in the case: False
 ---
 id: parent_third_party_kickout
 event: parent_third_party_kickout
@@ -1006,7 +1012,7 @@ attachment:
     - plaintiff_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "plaintiff" }
     - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "defendant" }
     - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) if has_existing_support_order else "" }
-    - conditions_have_changed: ${ have_circumstances_changed }
+    - conditions_have_changed: ${ have_circumstances_changed if has_existing_support_order and not agreed_on_who_pays else False}
     - other_parties: ${ other_parties if agreed_on_who_pays else "" }
     - is_new_agreement: ${ agreed_on_who_pays }
     - is_new_agreement__2: ${ agreed_on_who_pays }
