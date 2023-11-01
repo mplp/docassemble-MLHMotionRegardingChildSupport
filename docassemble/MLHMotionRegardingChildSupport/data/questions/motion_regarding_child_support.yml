@@ -458,7 +458,8 @@ content: |
   The court must be able to call you. So you have to give them a way to do this.
 
   If you do not have a phone number, you can give someone else's number
-  as long as that person is willing and able to pass on messages to you.
+  as long as they can pass on messages to you. You should tell this person
+  that you are using their number on your court forms.
 ---
 generic object: ALIndividual
 code: |
@@ -984,11 +985,11 @@ attachment:
     - plaintiffs: |
           ${ plaintiffs }  
           ${ plaintiffs[0].address.block() }  
-          ${ "Does not have phone" if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
+          ${ plaintiffs[0].phone_number }
     - defendants: |
           ${ defendants }  
           ${ defendants[0].address.block() }  
-          ${ "Does not have phone" if defendants[0].no_phone_number else defendants[0].phone_numbers() }
+          ${ defendants[0].phone_number }
     - third_parties: ""
     - judgment_entered: ${ has_existing_support_order }
     - judgment_entered_date: ${ recent_judgment_date }
