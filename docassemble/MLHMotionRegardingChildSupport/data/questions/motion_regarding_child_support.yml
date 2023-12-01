@@ -70,7 +70,6 @@ objects:
 generic object: ALIndividual
 code: |
   x.name.first
-  # TODO(#6): do we need to handle international addresses?
   x.address.address
   x.phone_number
   x.complete = True
@@ -640,7 +639,7 @@ fields:
     datatype: radio
     choices:
       - ${ users[0] } (you): user
-      - ${ defendants[0] }: other_party
+      - ${ other_parties[0] }: other_party
 ---
 depends on:
   - who_pays_new
