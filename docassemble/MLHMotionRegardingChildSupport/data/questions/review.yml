@@ -73,12 +73,25 @@ review:
       ${ showifdef('docket_number') }
   - label: Edit
     fields:
+      - county_choice
+      - recompute:
+        - court_index
+        - the_court
+    button: |
+      **What court is your case in?**
+
+      ${ the_court } - ${ county_choice } County
+  - label: Edit
+    fields:
       - user_ask_role
-      - which_side_paid
+      - recompute:
+        - which_side_paid
+        - plaintiffs
+        - defendants
     button: |
       **What party are you in your existing case?**
 
-      ${ showifdef('user_ask_role') }
+      ${ showifdef('user_ask_role').capitalize() }
   - note: |
       ---
 
@@ -97,7 +110,8 @@ review:
   - label: Edit
     fields:
       - who_paid
-      - which_side_paid
+      - recompute:
+        - which_side_paid
     button: |
       **Who was ordered to pay support in the current support order?**
 
@@ -205,7 +219,7 @@ review:
       ${ word(yesno(is_additional_amount_new)) }
 
       % if is_additional_amount_new:
-      Complete the following sentence. 'The reason for the other expenses is as follows:': ${ showifdef('additional_amount_reason') }
+      'The reason for the other expenses is as follows: ${ showifdef('additional_amount_reason') }'
 
       How much per month are you asking the court to order for the other expenses?: ${ currency(showifdef('additional_amount_new')) }
       % endif
@@ -218,7 +232,7 @@ review:
       **Are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
       % endif
 
-      Are you asking for the court to give ${ who_pays_new } a credit?: ${ word(yesno(asking_for_payer_benefits_credit)) }
+      ${ word(yesno(asking_for_payer_benefits_credit)) }
 
       % if asking_for_payer_benefits_credit:
       How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: ${ currency(showifdef('child_benefit_amount')) }
@@ -226,9 +240,7 @@ review:
   - Edit: |-
       esign
     button: |
-      **Electronic Signature**
-
-      Would you like to add your electronic signature to your form?: ${ word(yesno(esign)) }
+      **Would you like to add your electronic signature to your form?**: ${ word(yesno(esign)) }
   - Edit: |-
       has_hearing_info
     button: |
