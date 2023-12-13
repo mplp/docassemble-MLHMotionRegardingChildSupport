@@ -287,7 +287,6 @@ fields:
   - Case number: docket_number
     maxlength: 25
 ---
----
 id: existing child support order
 question: |
   Do you already have a child support order in your case (${ docket_number })?
@@ -394,6 +393,7 @@ content: |
   If you were the first person to file a form to start this case, you are the "Plaintiff". If someone else started this case by filing in court, you
   are the "Defendant".
 ---
+id: public record fyi
 question: |
   The information you put on your form is a public record
 subquestion: |
@@ -511,6 +511,7 @@ content: |
 
   ${ image_subtotal_amount.show(width="100%") }
 ---
+id: paid child care costs
 question: |
   Monthly child care costs
 subquestion: |
@@ -528,6 +529,7 @@ content: |
   Child care costs are used to allow a parent to work, look for work, or go to school.
   For most children the child care obligation ends around age 12, but it may be longer if the child’s health or safety requires it.
 ---
+id: paid ordinary medical costs
 question: |
   Monthly Ordinary medical costs
 subquestion: |
@@ -542,6 +544,7 @@ fields:
     datatype: currency
     show if: paid_medical_costs
 ---
+id: agreed on who pays
 question: |
   Have you and ${ other_parties } agreed on who should pay support and how much?
 fields:
@@ -551,6 +554,7 @@ fields:
       - Yes, we have agreed: True
       - No, we have not agreed: False
 ---
+id: child support formula FYI
 question: |
   Child Support Formula
 subquestion: |
@@ -573,6 +577,7 @@ subquestion: |
   To learn more, read [Child Support in a Nutshell](https://michiganlegalhelp.org/resources/family/child-support-nutshell).
 continue button field: support_formula_fyi
 ---
+id: who pays new
 question: |
   % if agreed_on_who_pays:
   In your agreement with ${ other_parties }, who are you asking the court to pay support?
@@ -596,6 +601,7 @@ code: |
     which_side_pays_new = "defendant"
 ---
 # TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
+id: base support new question
 question: |
   % if agreed_on_who_pays:
   In the agreement, how
@@ -617,6 +623,7 @@ fields:
     help: |
       Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 ---
+id: additional amount new question
 question: |
   % if agreed_on_who_pays:
   In the agreement, are
@@ -645,6 +652,7 @@ data: !!omap
 objects:
   - benefit_types_ordered: DAOrderedDict.using(elements={**benefit_types}, auto_gather=False, gathered=True)
 ---
+id: asking for payer benefits credit
 question: |
   % if agreed_on_who_pays:
   In the agreement, are
@@ -721,6 +729,7 @@ buttons:
     url: https://michiganlegalhelp.org
 ---
 # TODO(brycew): copied from LHI, adjust text to what's actually in our form
+id: efile note question
 question: |
   Completing this process does not file your forms with the court
 subquestion: |
@@ -748,6 +757,7 @@ content: |
   Look for the two-letter case type code at the end of your case number.
   (This could be DM, DC, DS, DP, or a different code.)
 ---
+id: Electronic signature question
 question: |
   Electronic Signature
 subquestion: |

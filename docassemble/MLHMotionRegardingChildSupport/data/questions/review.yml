@@ -273,39 +273,36 @@ review:
       Judge's bar number: ${ showifdef('judge_bar_number') }
 
 ---
-continue button field: users.revisit
 id: revisit users
 question: Edit your answers about yourself
 subquestion: |
   ${ users.table }
+continue button field: users.revisit
 ---
-continue button field: other_parties.revisit
 id: revisit other_parties
 question: |
   Edit your answers about the other side in your case
 subquestion: |
   ${ other_parties.table }
+continue button field: other_parties.revisit
 ---
-continue button field: |-
-  children.revisit
-id: |-
-  revisit children
-question: |-
+id: revisit children
+question: |
   Edit your answers about Children
 subquestion: |
   ${ children.table }
 
   ${ children.add_action() }
+continue button field: children.revisit
 ---
-continue button field: |
-  judge.revisit
 id: revisit judge
-question: |-
-  Edit your answers about Judge
-subquestion: |-
+question: |
+  Edit your answers about the Judge
+subquestion: |
   ${ judge.table }
    
   ${ judge.add_action() }
+continue button field: judge.revisit
 ---
 table: children.table
 rows: children
