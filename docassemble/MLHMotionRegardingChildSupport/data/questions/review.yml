@@ -33,46 +33,40 @@ question: |-
   Review your answers
 
 review:
-  - Edit: |-
-      users.revisit
+  - Edit: users.revisit
     button: |-
-      **Users**
+      **You**
 
       % for item in users:
       - ${ item }
       % endfor
-  - Edit: |-
-      other_parties.revisit
+  - Edit: other_parties.revisit
     button: |-
-      **Other Parties**
+      **The Other side of your case**
 
       % for item in other_parties:
       - ${ item }
       % endfor
-  - Edit: |-
-      children.revisit
+  - Edit: children.revisit
     button: |-
       **Children**
 
       % for item in children:
       - ${ item }
       % endfor
-  - Edit: |-
-      judge.revisit
+  - Edit: judge.revisit
     button: |-
       **Judge**
 
       % for item in judge:
       - ${ item }
       % endfor
-  - Edit: |-
-      docket_number
+  - Edit: docket_number
     button: |
       **What is your case number?**
 
       ${ showifdef('docket_number') }
-  - label: Edit
-    fields:
+  - Edit:
       - county_choice
       - recompute:
         - court_index
@@ -81,8 +75,7 @@ review:
       **What court is your case in?**
 
       ${ the_court } - ${ county_choice } County
-  - label: Edit
-    fields:
+  - Edit:
       - user_ask_role
       - recompute:
         - which_side_paid
@@ -96,8 +89,7 @@ review:
       ---
 
       <h2 class="h3">Prior Support Order</h2>
-  - label: Edit
-    fields:
+  - Edit:
       - has_existing_support_order
       - recompute:
         - set_all_existing_support
@@ -107,8 +99,7 @@ review:
     button: |
       **What date was the most recent judgment entered?**: ${ showifdef('recent_judgment_date') }
     show if: has_existing_support_order
-  - label: Edit
-    fields:
+  - Edit:
       - who_paid
       - recompute:
         - which_side_paid
@@ -122,14 +113,12 @@ review:
       ${ other_parties[0] }
       % endif
       % endif
-  - Edit: |-
-      subtotal_amount
+  - Edit: subtotal_amount
     button: |
       **What is the subtotal amount on your current Uniform Child Support Order?**
 
       ${ currency(showifdef('subtotal_amount')) }
-  - Edit: |-
-      paid_child_care
+  - Edit: paid_child_care
     button: |
       **Monthly child care costs**
 
@@ -288,7 +277,7 @@ continue button field: other_parties.revisit
 ---
 id: revisit children
 question: |
-  Edit your answers about Children
+  Edit your answers about your children
 subquestion: |
   ${ children.table }
 
@@ -297,7 +286,7 @@ continue button field: children.revisit
 ---
 id: revisit judge
 question: |
-  Edit your answers about the Judge
+  Edit your answers about the judge
 subquestion: |
   ${ judge.table }
    

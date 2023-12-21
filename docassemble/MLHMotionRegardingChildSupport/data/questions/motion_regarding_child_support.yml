@@ -231,7 +231,7 @@ subquestion: |
   You said you already do not have an existing Michigan divorce, separate maintenance, paternity, custody, or family support case.
   You must have one to continue to use this tool.
   
-  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 buttons:
   - Exit: exit
     url: https://michiganlegalhelp.org
@@ -346,7 +346,7 @@ question: |
 subquestion: |
   This tool may only be used to prepare a Motion Regarding Support in an existing Michigan family court case between two parents, with no third-party involvement.
 
-  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 buttons:
   - Exit: exit
     url: https://michiganlegalhelp.org
@@ -723,7 +723,7 @@ question: |
 subquestion: |
   Michigan law requires a change in circumstances for the court to change a child support order.
 
-  If you made a mistake, click the **Undo** button. Otherwise, click the **Exit** button to return to Michigan Legal Help.
+  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 buttons:
   - Exit: exit
     url: https://michiganlegalhelp.org
@@ -849,6 +849,7 @@ fields:
 ## Overridden questions from AL
 ############
 ---
+# Overridden since it's always a person
 sets:
   - other_parties[i].name.first
   - other_parties[i].name.last
@@ -930,10 +931,9 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
+    # Actually county
     - trial_court_district: |
-          % if the_court.type == 'district':
-          ${ the_court.number }
-          % endif
+          ${ the_court.address.county }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
