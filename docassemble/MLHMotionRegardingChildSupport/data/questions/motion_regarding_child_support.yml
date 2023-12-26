@@ -424,10 +424,10 @@ question: |
 fields:
   - no label: children.target_number
     datatype: integer
-    min: 0
+    min: 1
     validation messages:
       min: |
-        You need to have at least one minor child that you are request support for.
+        You need to have at least one minor child that you are requesting support for.
 ---
 id: minor birthdate question
 question: |
