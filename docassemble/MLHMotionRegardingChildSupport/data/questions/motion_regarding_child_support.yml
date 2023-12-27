@@ -942,12 +942,12 @@ attachment:
     - third_party_is_moving_party: False
     - plaintiffs: |
           ${ plaintiffs }  
-          ${ plaintiffs[0].address.block() }  
-          ${ plaintiffs[0].phone_number }
+          ${ plaintiffs[0].address.on_one_line() }  
+          ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
     - defendants: |
           ${ defendants }  
-          ${ defendants[0].address.block() }  
-          ${ defendants[0].phone_number }
+          ${ defendants[0].address.on_one_line() }  
+          ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - third_parties: ""
     - judgment_entered: ${ has_existing_support_order }
     - judgment_entered_date: ${ recent_judgment_date }
@@ -999,11 +999,11 @@ attachment:
     - trial_court_phone_number: ${ the_court.phone }
     - plaintiffs: |
           ${ plaintiffs }  
-          ${ plaintiffs[0].address.block() }  
+          ${ plaintiffs[0].address.on_one_line() }  
           ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
     - defendants: |
           ${ defendants }  
-          ${ defendants[0].address.block() }  
+          ${ defendants[0].address.on_one_line() }  
           ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - plaintiffs_attorney: 
     - defendants_attorney: 
