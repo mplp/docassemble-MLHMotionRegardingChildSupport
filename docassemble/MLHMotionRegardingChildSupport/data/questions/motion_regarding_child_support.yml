@@ -279,7 +279,7 @@ id: docket number
 question: |
   What is your case number?
 subquestion: |
-  Enter the case number from your existing divorce, separate maintenance, paternity, custody, or family support case.
+  Enter the case number from your divorce case, custody case, or other family support case.
 
   ${ collapse_template(where_case_number) }
 fields:
