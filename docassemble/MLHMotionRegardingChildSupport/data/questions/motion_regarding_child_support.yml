@@ -271,14 +271,11 @@ question: |
   Using this tool
 subquestion: |
   It should take you between ${ MLH_time_min } and ${ MLH_time_max } minutes to finish answering questions.
-  After you answer all the questions, your personalized *Motion Regarding Support* will be ready to print.
-  You will also get a *Uniform Child Support Order* without any numbers filled in.
+  After that, your personalized **Motion Regarding Support** will be ready to print.
 
-  Depending on your court, you may get a referral to the Friend of the Court, and they may prepare
-  a recommended support order for you. You can also use the
-  [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html)
-  on the Michigan Department of Health and Human Services website to calculate support, and
-  transfer the numbers manually to the support order.
+  You will also get a **Uniform Child Support Order** without any numbers filled in. You will use this as your proposed
+  order that you ask the judge to sign. This tool will not fill out the order for you. You will
+  see information about completing the order in this tool, and in the instructions you can download at the end of this tool.
 continue button field: MLH_intro_time
 ---
 id: docket number
