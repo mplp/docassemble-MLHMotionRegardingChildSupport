@@ -417,6 +417,23 @@ content: |
   In either one of these scenarios, you can use a confidential address and phone number (such as the address and phone number
   of a friend or relative who has given their permission, or a Post Office Box) instead of your residential address and personal phone number.
 ---
+# Overriding from AL to specify that they need to receive mail
+id: your address
+sets:
+  - users[0].address.address
+  - users[0].address.city
+  - users[0].address.zip
+  - users[0].address.unit
+  - users[0].address.state
+  - users[0].address.country
+question: |
+  What is your address?
+subquestion: |
+  Use an address where you can receive mail.
+fields:
+  - code: |
+      users[0].address_fields(country_code=AL_DEFAULT_COUNTRY, default_state=AL_DEFAULT_STATE, show_country=True)
+---
 id: how many children
 question: |
   How many minor children is this support for?
