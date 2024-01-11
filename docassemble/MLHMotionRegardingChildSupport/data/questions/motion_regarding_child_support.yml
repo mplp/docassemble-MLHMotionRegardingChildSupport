@@ -356,13 +356,12 @@ question: |
 subquestion: |
   You are called the “moving party” because you are filing this Motion Regarding Support.  
 
-  In your existing divorce, separate maintenance, paternity, custody, or family support case, you are either the Plaintiff or the Defendant.
-
-  What party are you in your case?
+  In your court case, you are either the Plaintiff or the Defendant.
 
   ${ collapse_template(help_user_ask_role_template) }
 fields: 
-  - no label: user_ask_role
+  - What party are you in your case?: user_ask_role
+    label above field: True
     datatype: radio
     choices:
       - I am the Plaintiff: plaintiff
@@ -389,8 +388,8 @@ content: |
 
   ${ image_plaintiff_or_defendant.show(width="100%") }
 
-  If you were the first person to file a form to start this case, you are the "Plaintiff". If someone else started this case by filing in court, you
-  are the "Defendant".
+  If you were the first person to file a form to start this case, you are the Plaintiff. If someone else started this case by filing in court, you
+  are the Defendant.
 ---
 id: public record fyi
 question: |
