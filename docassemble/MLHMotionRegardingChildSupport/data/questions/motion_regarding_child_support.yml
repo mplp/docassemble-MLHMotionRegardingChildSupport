@@ -781,9 +781,7 @@ subquestion: |
 
   ${ action_button_html(url_action('review_form'), label='Edit answers', color='info') }
   
-  <p>
   ${ al_user_bundle.download_list_html() }
-  </p>
 
   ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
 progress: 100
