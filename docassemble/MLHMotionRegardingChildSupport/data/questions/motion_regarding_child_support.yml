@@ -41,8 +41,8 @@ objects:
         """))
   - image_uniform_order_date: |
       DAStaticFile.using(
-        filename="date_of_order.jpg",
-        alt=word("The third page of the uniform child support order. The date is at the bottom, to the left of the judge's name"))
+        filename="date_judge_signature.png",
+        alt=word("The last page of the uniform child support order. The date is at the bottom, next to the judge's name"))
   - image_plaintiff_or_defendant: |
       DAStaticFile.using(
         filename="plaintiff_or_defendant.jpg",
@@ -298,7 +298,7 @@ fields:
     choices:
       - Yes, I have a child support order: True
       - No, I do not have a child support order: False
-  - When was the most recent judgment entered?: recent_judgment_date
+  - When did the judge sign the most recent Uniform Child Support Order?: recent_judgment_date
     label above field: True
     datatype: date
     max: ${ today() }
@@ -309,14 +309,11 @@ fields:
 ---
 template: where_date_uniform_child_order
 subject: |
-  Where can I find the date on my order forms?
+  Where can I find the date on my order?
 content: |
-  If your support order was entered on a Uniform Child Support Order form in Michigan,
-  you can find the date the order was entered on the last page of the order.
+  The date when the judge signed the order should be on the last page of the Uniform Child Support Order next to the judge's signature.
 
   ${ image_uniform_order_date.show(width="100%") }
-
-  If you have a different type of support order, the date that the order was entered is usually found at the end of the order, near the judge’s signature.
 ---
 code: |
   court_index = next(court_list.filter_courts_by_2([county_choice], ['circuit'], column_1='address_county', column_2='type'))[0]
