@@ -140,6 +140,7 @@ code: |
   nav.set_section("review_support_requested")
   support_formula_fyi
   who_pays_new
+  base_support_matches_calc
   base_support_new
   child_care_new
   ordinary_medical_new
@@ -593,7 +594,20 @@ code: |
   else:
     which_side_pays_new = "defendant"
 ---
-# TODO(brycew): helps go away when you try to type in the answer; how bad of a UX is that?
+id: base support matches calc
+question: |
+subquestion: |
+  On the following pages, you will be asked about the support amounts that you want the court to approve.
+fields:
+  - Select the option below that describes these amounts: base_support_matches_calc
+    label above field: True
+    datatype: radio
+    choices:
+      - The support amounts were calculated using the MiChildSupport Calculator: used_mi_calc
+      - The support amounts are different from the MiChildSupport Calculator amounts: different_from_mi_calc
+      - I was unable to use the MiChildSupportCalculator: unable_to_use_mi_calc
+---
+# TODO(brycew): helps hides again when you try to type in the answer; how bad of a UX is that?
 id: base support new question
 question: |
   % if agreed_on_who_pays:
@@ -1004,6 +1018,7 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
+    - does_not_follow_cs_formula: base_support_matches_calc != "used_mi_calc"
     # TODO(brycew): continue here
 ---
 attachment:
