@@ -232,9 +232,6 @@ subquestion: |
   You must have one to continue to use this tool.
   
   If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
-buttons:
-  - Exit: exit
-    url: https://michiganlegalhelp.org
 ---
 id: what_you_will_need
 question: |
@@ -347,9 +344,6 @@ subquestion: |
   This tool may only be used to prepare a Motion Regarding Support in an existing Michigan family court case between two parents, with no third-party involvement.
 
   If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
-buttons:
-  - Exit: exit
-    url: https://michiganlegalhelp.org
 ---
 id: what is the user's role?
 question: |
@@ -724,9 +718,6 @@ subquestion: |
   Michigan law requires a change in circumstances for the court to change a child support order.
 
   If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
-buttons:
-  - Exit: exit
-    url: https://michiganlegalhelp.org
 ---
 # TODO(brycew): copied from LHI, adjust text to what's actually in our form
 id: efile note question
