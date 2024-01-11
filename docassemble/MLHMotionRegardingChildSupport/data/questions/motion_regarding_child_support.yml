@@ -190,10 +190,16 @@ subquestion: |
 
   This tool is only for parents who:
 
-  * Already have a child support order from a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to change the amount of child support; **OR**
-  * Have filed a Michigan divorce, separate maintenance, paternity, custody, or family support case and want to ask the court to enter a child support order; **OR**
-  * Have a Michigan judgment of divorce or separate maintenance, or a paternity or custody order which didn’t include child support, and want to ask the court to order child support in that case now.
+  * Have a child support order in a Michigan court case and want to file a motion to change the amount of child support; **OR**
+  * Filed a Michigan divorce, custody, or child support case, and want to ask the court for a temporary child support order; **OR**
+  * Have a Michigan Judgment of Divorce or final order in a custody or paternity case that does not include child support, and want to ask the court to order child support in that case now.
+
+  To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
+
+  If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
 continue button field: intro_screen
+comment: |
+  TODO: add direct links to Changing a Child Support Order and Getting a Child Support Order
 ---
 id: MLH intro landing
 question: |
