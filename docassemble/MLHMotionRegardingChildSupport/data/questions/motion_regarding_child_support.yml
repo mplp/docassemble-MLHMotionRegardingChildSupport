@@ -498,8 +498,9 @@ template: where_subtotal_amount
 subject: |
   Where do I find the Subtotal amount?
 content: |
-  You can find the subtotal amount on the first page of the uniform child support order. It is highlighted in yellow
-  in it's full table below.
+  You can find the subtotal amount on the second page of the uniform child support order, highlighted in yellow below.
+
+  If there are multiple children, choose the subtotal amount in the column that matches the number of children who are still covered by the order. Usually the child support obligation for each child ends on the last day of the month they turn 18. But in some cases, child support may continue up to age 19 and a half. Look under the "Post-majority Support" section on the second page of the order if you are not sure if a child is still covered by the order."
 
   ${ image_subtotal_amount.show(width="100%") }
 ---
