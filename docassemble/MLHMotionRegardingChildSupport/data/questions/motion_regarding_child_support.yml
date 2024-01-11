@@ -49,8 +49,8 @@ objects:
         alt=word("The plaintiff and defendant's names are circled, partially down the first page. The Plaintiff is on the left, and the defendant is on the right."))
   - image_support_amount: |
       DAStaticFile.using(
-        filename="support_amount.jpg",
-        alt=word("The first page of the uniform child support order. The amounts are at the bottom, in item number 3."))
+        filename="support_amount.png",
+        alt=word("The second page of the uniform child support order. The amounts are at the bottom, in item number 3."))
   - image_subtotal_amount: |
       DAStaticFile.using(
         filename="subtotal_amount.png",
@@ -461,7 +461,7 @@ template: where_support_amounts
 subject: |
   Where is the amount of support in the current support order?
 content: |
-  The support amounts can be found in the table at the bottom of the first page of your current support order,
+  The support amounts can be found in the table at the top of the second page of your current support order,
   as seen in the red rectangle in the image below. 
 
   ${ image_support_amount.show(width="100%") }
