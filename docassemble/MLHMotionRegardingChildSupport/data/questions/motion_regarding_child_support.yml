@@ -552,24 +552,21 @@ id: child support formula FYI
 question: |
   Child Support Formula
 subquestion: |
-  The court must order support according to the Michigan Child Support Formula unless the result would be unfair.
-  If the parents reach an agreement about the child support amount, the court can consider the
-  agreement, but it does not have to approve it.
+  **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support base on the Michigan Child
+  Support Formula**. You will se the child support numbers at the end of the calculation on the results page.
 
-  You can use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html)
-  on the Michigan Department of Health and Human Services website to find out what the support amount might be in your case.
+  If you are asking for the Support Formula amounts in your motion, you will need the Calculator results page to answer the questions
+  in this tool. If you are asking for different amounts, you will still need the Calculator results page to complete the Uniform Child Support Order
+  Deviation Addendum that you will download at the end of this tool.
 
-  The Michigan Child Support Formula uses:
-
-  * The parents' incomes
-  * The number of nights per year (“overnights”) the children spend with each parent
-  * The number of children
-  * Medical costs
-  * Child care costs
-  * Other factors.
-
-  To learn more, read [Child Support in a Nutshell](https://michiganlegalhelp.org/resources/family/child-support-nutshell).
+  ${ collapse_template(why_do_i_need_to_calculate)}
 continue button field: support_formula_fyi
+---
+template: why_do_i_need_to_calculate
+subject: Why do I need to calculate child support using the MIChildSupport Calculator?
+content: |
+  The court must order child support according to the Michigan Child Support Formula, unless the court finds the result would be
+  unfair or inappropriate. This is true even if the parties agree to an amount that differs from the Support Formula amount.
 ---
 id: who pays new
 question: |
