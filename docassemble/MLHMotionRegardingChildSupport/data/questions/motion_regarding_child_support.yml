@@ -209,13 +209,12 @@ subquestion: |
   
   You may want to speak to a lawyer if any of these apply to you:
 
-  * You have a child support order **from another state** but you now live in Michigan.
-      * Under certain circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
+  * You have a child support order **from another state** but now you live in Michigan. In some circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
   * There is a **bench warrant** against you for **non-payment of support**. This could happen if:
       * A motion to show cause was filed against you for non-payment of support,
-      * You did not appear at the show cause hearing, and
+      * You did not appear at the hearing, and
       * The court issued a bench warrant against you.
-  * You have any questions or aren't sure what to do.
+  * You aren't sure what to do.
 
   ${ MLH_GUIDE_FULL }
 continue button field: MLH_intro_landing
