@@ -715,10 +715,11 @@ fields:
 template: circumstance_examples
 subject: What are some examples of changes in circumstances?
 content: |
-  * The needs of the children have changed;
+  * The child's needs have changed (such as a significant increase in childcare expenses);
   * There has been a change in custody;
-  * The parent who pays child support has had a change in income; or
-  * The parent who receives child support has had a change in income.
+  * A parent's income has changed;
+  * A parent's ability to earn money has changed; or
+  * There has been a change in health care coverage.
 ---
 id: circumstance_changes
 question: |
