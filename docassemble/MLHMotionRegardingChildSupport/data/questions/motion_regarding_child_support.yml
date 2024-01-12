@@ -35,26 +35,26 @@ objects:
   - image_court_papers: |
       DAStaticFile.using(
         filename="court_papers.jpg",
-        alt=word("""
-          A court form. The court information is circled in the top right; State of Michigan, Judicial District, Judicial Circuit, and County Probate.
-          The case number is circled in the top left: 01-234 DM. Below those is the party information, including the plaintiffs' and defendants' names, and address
-        """))
+        alt_text=word(
+          "A court form. The court information is circled in the top right; State of Michigan, Judicial District, Judicial Circuit, and County Probate. "
+          "The case number is circled in the top left: 01-234 DM. Below those is the party information, including the plaintiffs' and defendants' names, and address."
+        ))
   - image_uniform_order_date: |
       DAStaticFile.using(
-        filename="date_judge_signature.png",
-        alt=word("The last page of the uniform child support order. The date is at the bottom, next to the judge's name"))
+        filename="date_of_judge_signature.png",
+        alt_text=word("The last page of the uniform child support order. The date is at the bottom, next to the judge's name"))
   - image_plaintiff_or_defendant: |
       DAStaticFile.using(
         filename="plaintiff_or_defendant.jpg",
-        alt=word("The plaintiff and defendant's names are circled, partially down the first page. The Plaintiff is on the left, and the defendant is on the right."))
+        alt_text=word("The plaintiff and defendant's names are circled, partially down the first page. The Plaintiff is on the left, and the defendant is on the right."))
   - image_support_amount: |
       DAStaticFile.using(
         filename="support_amount.png",
-        alt=word("The second page of the uniform child support order. The amounts are at the bottom, in item number 3."))
+        alt_text=word("The second page of the uniform child support order. The amounts are at the top, in item number 1."))
   - image_subtotal_amount: |
       DAStaticFile.using(
         filename="subtotal_amount.png",
-        alt=word("In the support table in the uniform child support order. The subtotal is the 4th row, and the value is the furthest right column with a value."))
+        alt_text=word("In the support table in the uniform child support order. The subtotal is the 4th row, and the value is the furthest right column with a value."))
 ---
 objects:
   - users: ALPeopleList.using(auto_gather=True, complete_attribute="complete", target_number=1)
@@ -211,10 +211,8 @@ subquestion: |
   You may want to speak to a lawyer if any of these apply to you:
 
   * You have a child support order **from another state** but now you live in Michigan. In some circumstances, you may be able to have your case transferred to Michigan. However, this tool cannot help you do that.
-  * There is a **bench warrant** against you for **non-payment of support**. This could happen if:
-      * A motion to show cause was filed against you for non-payment of support,
-      * You did not appear at the hearing, and
-      * The court issued a bench warrant against you.
+  * There is a **bench warrant** against you for **non-payment of support**. This could happen if a motion to show cause was filed against you for non-payment of support, 
+    you did not appear at the hearing, and the court issued a bench warrant against you.
   * You aren't sure what to do.
 
   ${ MLH_GUIDE_FULL }
@@ -522,9 +520,11 @@ template: where_subtotal_amount
 subject: |
   Where do I find the Subtotal amount?
 content: |
-  You can find the subtotal amount on the second page of the uniform child support order, highlighted in yellow below.
+  You can find the subtotal amount on the second page of the Uniform Child Support Order, highlighted in yellow below.
 
-  If there are multiple children, choose the subtotal amount in the column that matches the number of children who are still covered by the order. Usually the child support obligation for each child ends on the last day of the month they turn 18. But in some cases, child support may continue up to age 19 and a half. Look under the "Post-majority Support" section on the second page of the order if you are not sure if a child is still covered by the order."
+  If there are multiple children, choose the subtotal amount in the column that matches the number of children who are still covered by the order.
+  Usually the child support obligation for each child ends on the last day of the month they turn 18. But in some cases, child support may continue up to age 19 and a half.
+  Look under the "Post-majority Support" section on the second page of the order if you are not sure if a child is still covered by the order.
 
   ${ image_subtotal_amount.show(width="100%") }
 ---
@@ -576,7 +576,7 @@ question: |
   Child Support Formula
 subquestion: |
   **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support base on the Michigan Child
-  Support Formula**. You will se the child support numbers at the end of the calculation on the results page.
+  Support Formula**. You will see the child support numbers at the end of the calculation on the results page.
 
   If you are asking for the Support Formula amounts in your motion, you will need the Calculator results page to answer the questions
   in this tool. If you are asking for different amounts, you will still need the Calculator results page to complete the Uniform Child Support Order
@@ -1043,7 +1043,7 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    - does_not_follow_cs_formula: base_support_matches_calc != "used_mi_calc"
+    # - does_not_follow_cs_formula: base_support_matches_calc != "used_mi_calc"
     # TODO(brycew): continue here
 ---
 attachment:
