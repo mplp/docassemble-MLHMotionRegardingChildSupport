@@ -682,11 +682,9 @@ question: |
   % endif
   you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
 subquestion: |
-  For example, ${ "you" if who_pays_new == "user" else other_parties[0] } would receive a credit each month for benefits from Social Security, Veteran’s Administration, or railroad retirement.
-
   If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
-  Veteran’s Administration, or Railroad Retirement, his or her dependent children may also get benefits based on the payer’s work record. If this is so,
-  the court will count the children’s benefits as a credit towards payment of the parent’s child support obligation. In other words, the amount of dependent
+  Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
+  The court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent
   benefits should be subtracted from the support amount.
 fields:
   - Are you asking for the court to give ${ "you" if who_pays_new == "user" else other_parties[0] } a credit?: asking_for_payer_benefits_credit
