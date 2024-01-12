@@ -705,7 +705,7 @@ id: have_circumstances_changed
 question: |
   Have circumstances changed?
 subquestion: |
-  The court may only change the amount of child support if there has been a change in circumstances. Examples of changes in circumstances are:
+  The court may only change the amount of child support if there has been a change in circumstances since the judge signed the last support order. Examples of changes in circumstances are:
 
   ${ circumstance_examples.content }
 fields:
