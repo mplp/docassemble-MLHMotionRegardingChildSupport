@@ -909,15 +909,34 @@ objects:
   - mrcs_instructions: ALDocument.using(title="Instructions", filename="Instructions.docx", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx", enabled=True)
-  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", enabled=True, has_addendum=False)
-  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", enabled=True, has_addendum=False)
+  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", has_addendum=False)
+  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", has_addendum=False)
+  - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral_Order_-_FOC_12.pdf", has_addendum=False)
 ---
 objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    mrcs_foc10.enabled = False
+  else:
+    mrcs_foc10.enabled = True
+---
+code: |
+  if base_support_matches_calc == "different_from_mi_calc":
+    mrcs_foc10d.enabled = True
+  else:
+    mrcs_foc10d.enabled = False
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    mrcs_foc12.enabled = True
+  else:
+    mrcs_foc12.enabled = False
 ---
 attachment:
   variable name: mrcs_attachment_addendum[i]
@@ -1052,7 +1071,6 @@ attachment:
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - CASE NO: ${ docket_number }
-    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
     - plaintiffs: ${ plaintiffs }
     - defendants: ${ defendants }
@@ -1064,4 +1082,30 @@ attachment:
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
     # TODO(brycew): continue here
-
+---
+attachment:
+  name: Referral Order
+  variable name: mrcs_foc12[i]
+  skip undefined: True
+  editable: True
+  pdf template file: Referral_Order_-_FOC_12.pdf
+  fields:
+    - trial_court_circuit: |
+          % if the_court.type == 'circuit':
+          ${ the_court.number }
+          % endif
+    - trial_court_county: |
+          ${ the_court.address.county }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - CASE NO: ${ docket_number }
+    - trial_court_phone_number: ${ the_court.phone }
+    - plaintiffs: |
+          ${ plaintiffs }  
+          ${ plaintiffs[0].address.on_one_line() }  
+          ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
+    - defendants: |
+          ${ defendants }  
+          ${ defendants[0].address.on_one_line() }  
+          ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
+    - investigation_requested: True
+    # - TODO do we need judge_name?
