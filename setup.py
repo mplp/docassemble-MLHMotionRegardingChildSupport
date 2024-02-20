@@ -44,12 +44,12 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHMotionRegardingChildSupport',
-      version='0.0.6',
+      version='0.0.7',
       description=('A motion to change or get child support in Michigan'),
       long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n\r\n* Bryce Willey',
       long_description_content_type='text/markdown',
       author='Bryce Willey',
-      author_email='',
+      author_email='ekressmiller@lsscm.org',
       license='The MIT License (MIT)',
       url='https://michiganlegalhelp.org/resources/family/do-it-yourself-motion-change-or-get-child-support',
       packages=find_packages(),
