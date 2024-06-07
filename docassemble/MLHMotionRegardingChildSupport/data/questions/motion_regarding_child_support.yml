@@ -141,11 +141,12 @@ code: |
   support_formula_fyi
   who_pays_new
   base_support_matches_calc
-  base_support_new
-  child_care_new
-  ordinary_medical_new
-  is_additional_amount_new
-  asking_for_payer_benefits_credit
+  if not base_support_matches_calc == "unable_to_use_mi_calc":
+    base_support_new
+    child_care_new
+    ordinary_medical_new
+    is_additional_amount_new
+    asking_for_payer_benefits_credit
 
   nav.set_section("review_conclusion")
   # TODO(#7): do we need hearing info?
@@ -1108,4 +1109,3 @@ attachment:
           ${ defendants[0].address.on_one_line() }  
           ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - investigation_requested: True
-    # - TODO do we need judge_name?
