@@ -16,6 +16,7 @@ metadata:
   authors:
     - Bryce Willey
     - Amy Billmire
+    - Emily Miller
 ---
 code: |
   interview_short_title = "Motion Regarding Child Support"
@@ -184,7 +185,7 @@ code: |
     paid_medical_costs
   set_all_existing_support = True
 ---
-id: intro screen
+id: intro screen FirstScreen
 question: |
   Welcome to the Do-It-Yourself Motion to Change or Get Child Support tool
 subquestion: |
@@ -199,7 +200,7 @@ subquestion: |
   To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
 
   If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
-continue button field: intro_screen
+continue button field: intro_screen 
 comment: |
   TODO: add direct links to Changing a Child Support Order and Getting a Child Support Order
 ---
@@ -788,7 +789,7 @@ fields:
   - Would you like to add your electronic signature to your form?: esign
     datatype: yesnoradio
 ---
-id: download child support motion
+id: download child support motion DownloadScreen
 event: motion_child_support_download
 question: |
   All done
@@ -909,10 +910,10 @@ include:
 objects:
   - mrcs_instructions: ALDocument.using(title="Instructions", filename="Instructions.docx", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx", enabled=True)
+  - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
   - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", has_addendum=False)
   - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", has_addendum=False)
-  - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral_Order_-_FOC_12.pdf", has_addendum=False)
+  - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral Order - FOC 12.pdf", has_addendum=False)
 ---
 objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
@@ -924,8 +925,10 @@ objects:
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
     mrcs_foc10.enabled = False
+    mrcs_attachment_addendum.enabled = False
   else:
     mrcs_foc10.enabled = True
+    mrcs_attachment_addendum.enabled = True
 ---
 code: |
   if base_support_matches_calc == "different_from_mi_calc":
@@ -961,7 +964,7 @@ attachment:
   filename: Motion Regarding Support - FOC 50
   variable name: mrcs_attachment_main[i]
   skip undefined: True
-  pdf template file: Motion Regarding Support - FOC 50.pdf
+  pdf template file: MotionRegardingSupport-FOC50.pdf
   editable: False
   fields:
     - trial_court_circuit: |
@@ -1002,9 +1005,10 @@ attachment:
     - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "defendant" }
     - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) if has_existing_support_order else "" }
     - conditions_have_changed: ${ have_circumstances_changed if has_existing_support_order and not agreed_on_who_pays else False}
-    - other_parties: ${ other_parties if agreed_on_who_pays else "" }
-    - is_new_agreement: ${ agreed_on_who_pays }
-    - is_new_agreement__2: ${ agreed_on_who_pays }
+    - other_parties: ${ other_parties if agreed_on_who_pays and not base_support_matches_calc == "unable_to_use_mi_calc" else "" }
+    - is_new_agreement: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
+    - is_new_agreement__2: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
+    - order_request: ${ "I ask the court to enter a referral order to the Friend of the Court for a support investigation." if base_support_matches_calc == "unable_to_use_mi_calc" else "" } 
     - signature_date: ${ signature_date if esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
     #- judge_name: ${ judge.name if has_hearing_info else "" }
@@ -1089,7 +1093,7 @@ attachment:
   variable name: mrcs_foc12[i]
   skip undefined: True
   editable: True
-  pdf template file: Referral_Order_-_FOC_12.pdf
+  pdf template file: ReferralOrder-FOC12.pdf
   fields:
     - trial_court_circuit: |
           % if the_court.type == 'circuit':
