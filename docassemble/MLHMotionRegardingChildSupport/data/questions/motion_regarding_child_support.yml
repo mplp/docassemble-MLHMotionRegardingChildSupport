@@ -161,6 +161,9 @@ code: |
   if esign:
     signature_date
   
+  plaintiffs
+  defendants
+    
   interview_motion_regarding_child_support = True
 ---
 mandatory: True
@@ -1031,10 +1034,9 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
+    # Actually county
     - trial_court_district: |
-          % if the_court.type == 'district':
-          ${ the_court.number }
-          % endif
+          ${ the_court.address.county }
     - CASE NO: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
@@ -1069,10 +1071,9 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
+    # Actually county
     - trial_court_district: |
-          % if the_court.type == 'district':
-          ${ the_court.number }
-          % endif
+          ${ the_court.address.county }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - CASE NO: ${ docket_number }
