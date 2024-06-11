@@ -142,12 +142,8 @@ code: |
   support_formula_fyi
   who_pays_new
   base_support_matches_calc
-  if not base_support_matches_calc == "unable_to_use_mi_calc":
-    base_support_new
-    child_care_new
-    ordinary_medical_new
-    is_additional_amount_new
-    asking_for_payer_benefits_credit
+  new_support_info
+    
 
   nav.set_section("review_conclusion")
   # TODO(#7): do we need hearing info?
@@ -183,10 +179,22 @@ code: |
   if has_existing_support_order:
     current_child_support_signpost
     who_paid
+    which_side_paid
     subtotal_amount
     paid_child_care
     paid_medical_costs
   set_all_existing_support = True
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    undefine('base_support_new', 'child_care_new', 'ordinary_medical_new', 'is_additional_amount_new', 'asking_for_payer_benefits_credit')
+  else:
+    base_support_new
+    child_care_new
+    ordinary_medical_new
+    is_additional_amount_new
+    asking_for_payer_benefits_credit
+  new_support_info = True
 ---
 id: intro screen FirstScreen
 question: |
@@ -203,7 +211,7 @@ subquestion: |
   To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
 
   If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
-continue button field: intro_screen 
+continue button field: intro_screen
 comment: |
   TODO: add direct links to Changing a Child Support Order and Getting a Child Support Order
 ---

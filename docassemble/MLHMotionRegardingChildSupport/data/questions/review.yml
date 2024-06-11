@@ -132,7 +132,7 @@ review:
     button: |
       **Monthly Ordinary medical costs**
 
-      Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+      Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
 
       % if paid_medical_costs:
       How much in ordinary medical costs were they ordered to pay per month?: ${ currency(showifdef('medical_care_amount')) }
@@ -182,6 +182,21 @@ review:
       ${ other_parties[0] }
       % endif
       % endif
+  - Edit: 
+      - base_support_matches_calc
+      - recompute:
+        - new_support_info
+    button: |
+      **MI Child Support Calculator**
+      
+      % if base_support_matches_calc == "used_mi_calc":
+      The support amounts were calculated using the MiChildSupport Calculator.
+      % elif base_support_matches_calc == "different_from_mi_calc":
+      The support amounts are different from the MiChildSupport Calculator amounts.
+      % else:
+      I was unable to use the MiChildSupportCalculator.
+      % endif
+     
   - Edit: |-
       base_support_new
     button: |
