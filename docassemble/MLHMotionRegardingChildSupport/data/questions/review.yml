@@ -78,9 +78,9 @@ review:
   - Edit:
       - user_ask_role
       - recompute:
-        - which_side_paid
         - plaintiffs
         - defendants
+        - which_side_paid
     button: |
       **What party are you in your existing case?**
 
@@ -92,6 +92,7 @@ review:
   - Edit:
       - has_existing_support_order
       - recompute:
+        - kick_out_check
         - set_all_existing_support
     button: |
       **Do you have a child support order in your case ${ docket_number }**: ${ word(yesno(has_existing_support_order)) }
@@ -121,34 +122,46 @@ review:
   - Edit: paid_child_care
     button: |
       **Monthly child care costs**
-
-      Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      
+      % if who_paid == "user":
+      Were you ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      % else:
+      Was ${ other_parties[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      % endif
 
       % if paid_child_care:
-      How much in child care costs were they ordered to pay per month?: ${ currency(showifdef('child_care_amount')) }
+      How much child care costs were ordered per month?: ${ currency(showifdef('child_care_amount')) }
       % endif
   - Edit: |-
       paid_medical_costs
     button: |
       **Monthly Ordinary medical costs**
-
-      Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+      
+      % if who_paid == "user":
+      Were you ordered to pay ordinary medical costs costs?: ${ word(yesno(paid_medical_costs)) }
+      % else:
+      Was ${ other_parties[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+      % endif
 
       % if paid_medical_costs:
-      How much in ordinary medical costs were they ordered to pay per month?: ${ currency(showifdef('medical_care_amount')) }
+      How much ordinary medical costs were ordered per month?: ${ currency(showifdef('medical_care_amount')) }
       % endif
   - note: |
       ---
 
       <h2 class="h3">Agreement Information</h2>
-  - Edit: |-
-      agreed_on_who_pays
+  - Edit:
+      - agreed_on_who_pays
+      - recompute:
+        - kick_out_check
     button: |
       **Have you and ${ other_parties } agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
-  - Edit: |-
-      have_circumstances_changed
+  - Edit:
+      - have_circumstances_changed
+      - recompute:
+        - kick_out_check
     button: |
       **Have circumstances changed?**
 
