@@ -733,13 +733,12 @@ subquestion: |
 fields:
   - Have circumstances changed?: have_circumstances_changed
     datatype: yesnoradio
-  - How have your circumstances changed?: circumstance_changes
+    label above field: True
+  - How have your circumstances changed? Explain in detail, and use complete sentences: circumstance_changes
     label above field: True
     input type: area
     show if: have_circumstances_changed
   - note: |
-      Explain in detail, and use complete sentences.
-
       Your answer will be attached to your *Motion Regarding Support*. It will help the court decide whether child support should be changed at this time.
     show if: have_circumstances_changed
 ---
@@ -963,7 +962,7 @@ code: |
 ---
 attachment:
   variable name: mrcs_attachment_addendum[i]
-  docx template file: Motion Regarding Support Addendum.docx
+  docx template file: Motion_Regarding_Support_Addendum.docx
   skip undefined: True
 ---
 code: |
