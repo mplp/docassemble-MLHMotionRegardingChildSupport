@@ -33,6 +33,17 @@ question: |-
   Review your answers
 
 review:
+  - note: |
+      ---
+      <h2 class="h3">Do You Qualify</h2>
+
+      You qualify to use this tool because you:
+      * existing support order
+      * agree
+      * circ changed
+      
+      ${ word(yesno(has_existing_support_order)) }
+
   - Edit: users.revisit
     button: |-
       **You**
@@ -89,16 +100,9 @@ review:
       ---
 
       <h2 class="h3">Prior Support Order</h2>
-  - Edit:
-      - has_existing_support_order
-      - recompute:
-        - kick_out_check
-        - set_all_existing_support
-    button: |
-      **Do you have a child support order in your case ${ docket_number }**: ${ word(yesno(has_existing_support_order)) }
   - Edit: recent_judgment_date
     button: |
-      **What date was the most recent judgment entered?**: ${ showifdef('recent_judgment_date') }
+      **What date was the most recent support order entered?**: ${ showifdef('recent_judgment_date') }
     show if: has_existing_support_order
   - Edit:
       - who_paid
@@ -152,16 +156,12 @@ review:
       <h2 class="h3">Agreement Information</h2>
   - Edit:
       - agreed_on_who_pays
-      - recompute:
-        - kick_out_check
     button: |
       **Have you and ${ other_parties } agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
   - Edit:
       - have_circumstances_changed
-      - recompute:
-        - kick_out_check
     button: |
       **Have circumstances changed?**
 

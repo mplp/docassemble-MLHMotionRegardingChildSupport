@@ -107,17 +107,22 @@ code: |
   if not has_existing_case:
     existing_case_kickout
   what_you_will_need
-  docket_number
+
   has_existing_support_order
   if has_existing_support_order:
     recent_judgment_date
-
-  county_choice
-  court_index
-  the_court
+  if has_existing_support_order and not agreed_on_who_pays:
+    if not have_circumstances_changed:
+      circumstances_kickout
+    circumstance_changes
 
   if not is_parent or third_party_named:
     parent_third_party_kickout
+    
+  county_choice
+  court_index
+  the_court
+  docket_number
 
   nav.set_section("review_your_info")
   user_started_case
@@ -133,9 +138,6 @@ code: |
   set_all_existing_support
 
   nav.set_section("review_agreement")
-  if has_existing_support_order and not agreed_on_who_pays:
-    if not have_circumstances_changed:
-      circumstances_kickout
 
   nav.set_section("review_support_requested")
   support_formula_fyi
@@ -183,12 +185,6 @@ code: |
     paid_child_care
     paid_medical_costs
   set_all_existing_support = True
----
-code: |
-  if has_existing_support_order and not agreed_on_who_pays:
-    if not have_circumstances_changed:
-      circumstances_kickout
-  kick_out_check = True
 ---
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
@@ -579,7 +575,7 @@ fields:
 ---
 id: agreed on who pays
 question: |
-  Have you and ${ other_parties } agreed on who should pay support and how much?
+  Have you and the other parent agreed on who should pay support and how much?
 fields:
   - no label: agreed_on_who_pays
     datatype: radio
@@ -734,13 +730,21 @@ fields:
   - Have circumstances changed?: have_circumstances_changed
     datatype: yesnoradio
     label above field: True
-  - How have your circumstances changed? Explain in detail, and use complete sentences: circumstance_changes
-    label above field: True
+---
+id: circumstance_changes
+question: |
+  How have your circumstances changed?
+subquestion: |
+  Explain in detail, and use complete sentences.
+  
+  Your answer will be attached to your *Motion Regarding Support*.
+  It will help the court decide whether child support should be changed at this time.
+  
+  ${ collapse_template(circumstance_examples) }
+fields:
+  - How have your circumstances changed?: circumstance_changes
     input type: area
-    show if: have_circumstances_changed
-  - note: |
-      Your answer will be attached to your *Motion Regarding Support*. It will help the court decide whether child support should be changed at this time.
-    show if: have_circumstances_changed
+    label above field: True
 ---
 template: circumstance_examples
 subject: What are some examples of changes in circumstances?
