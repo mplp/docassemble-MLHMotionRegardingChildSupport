@@ -111,9 +111,8 @@ code: |
   has_existing_support_order
   if has_existing_support_order:
     recent_judgment_date
+  agreed_on_who_pays
   if has_existing_support_order and not agreed_on_who_pays:
-    if not have_circumstances_changed:
-      circumstances_kickout
     circumstance_changes
 
   if not is_parent or third_party_named:
@@ -573,16 +572,6 @@ fields:
     datatype: currency
     show if: paid_medical_costs
 ---
-id: agreed on who pays
-question: |
-  Have you and the other parent agreed on who should pay support and how much?
-fields:
-  - no label: agreed_on_who_pays
-    datatype: radio
-    choices: 
-      - Yes, we have agreed: True
-      - No, we have not agreed: False
----
 id: child support formula FYI
 question: |
   Child Support Formula
@@ -719,17 +708,53 @@ fields:
     datatype: currency
     show if: asking_for_payer_benefits_credit
 ---
-id: have_circumstances_changed
+if: has_existing_support_order
+id: agreement and circumstances change
 question: |
-  Have circumstances changed?
+  Asking for a new order
 subquestion: |
-  The court may only change the amount of child support if there has been a change in circumstances since the judge signed the last support order. Examples of changes in circumstances are:
-
-  ${ circumstance_examples.content }
+  The judge can only change your child support order if:
+  
+  * you and the other parent **agree to the change** or 
+  * there has been a **change in circumstances** since the judge signed the last support order. 
 fields:
+  - Have you and the other parent agreed on who should pay support and how much?: agreed_on_who_pays
+    datatype: radio
+    label above field: True
+    choices: 
+      - Yes, we have agreed: True
+      - No, we have not agreed: False
   - Have circumstances changed?: have_circumstances_changed
     datatype: yesnoradio
     label above field: True
+    show if:
+      variable: agreed_on_who_pays
+      is: False
+  - note: |
+      ${ collapse_template(circumstance_examples) }
+    show if:
+      variable: agreed_on_who_pays
+      is: False
+  - note: |
+       If the answer to **both** questions is **"No,"** you cannot use this tool to request a change to your support order. Return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal resources.
+    show if:
+      variable: have_circumstances_changed
+      is: False
+validation code: |
+  if not agreed_on_who_pays and not have_circumstances_changed:
+    validation_error("To change a support order, you must either reach an agreement with the other parent or show that circumstances have changed.")
+---
+if: not has_existing_support_order
+id: agreement
+question: |
+  Have you and the other parent agreed on the new support order?
+fields:
+  - Have you and the other parent agreed on who should pay support and how much?: agreed_on_who_pays
+    datatype: radio
+    label above field: True
+    choices: 
+      - Yes, we have agreed: True
+      - No, we have not agreed: False
 ---
 id: circumstance_changes
 question: |

@@ -34,10 +34,10 @@ question: |-
 
 review:
   - note: |
-      ---
       <h2 class="h3">Do You Qualify</h2>
 
       You qualify to use this tool because you:
+      
       * existing support order
       * agree
       * circ changed
