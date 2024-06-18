@@ -34,16 +34,7 @@ question: |-
 
 review:
   - note: |
-      <h2 class="h3">Do You Qualify</h2>
-
-      You qualify to use this tool because you:
-      
-      * existing support order
-      * agree
-      * circ changed
-      
-      ${ word(yesno(has_existing_support_order)) }
-
+      <h2 class="h3">Your Case Information</h2>
   - Edit: users.revisit
     button: |-
       **You**
@@ -100,6 +91,13 @@ review:
       ---
 
       <h2 class="h3">Prior Support Order</h2>
+  - note: |
+      % if has_existing_support_order:
+      **You have an existing support order.** 
+      % else:
+      **You do NOT have an existing support order.**
+      % endif
+      (If you need to change this answer, please start over from the beginning.)
   - Edit: recent_judgment_date
     button: |
       **What date was the most recent support order entered?**: ${ showifdef('recent_judgment_date') }
@@ -156,12 +154,16 @@ review:
       <h2 class="h3">Agreement Information</h2>
   - Edit:
       - agreed_on_who_pays
+      - recompute:
+        - circumstance_changes_update
     button: |
       **Have you and ${ other_parties } agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
   - Edit:
       - have_circumstances_changed
+      - recompute:
+        - circumstance_changes_update
     button: |
       **Have circumstances changed?**
 

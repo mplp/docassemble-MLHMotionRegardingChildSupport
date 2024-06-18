@@ -196,6 +196,14 @@ code: |
     asking_for_payer_benefits_credit
   new_support_info = True
 ---
+code: | 
+  if has_existing_support_order and not agreed_on_who_pays:
+    circumstance_changes
+  else:
+    undefine('have_circumstances_changed')
+    undefine('circumstance_changes')
+  circumstance_changes_update = True
+---
 id: intro screen FirstScreen
 question: |
   Welcome to the Do-It-Yourself Motion to Change or Get Child Support tool
@@ -972,7 +980,7 @@ code: |
     mrcs_foc10.enabled = True
 ---
 code: |
-  if base_support_matches_calc == "unable_to_use_mi_calc" and not have_circumstances_changed:
+  if base_support_matches_calc == "unable_to_use_mi_calc" and (agreed_on_who_pays or not has_existing_support_order):
     mrcs_attachment_addendum.enabled = False
   else:
     mrcs_attachment_addendum.enabled = True
