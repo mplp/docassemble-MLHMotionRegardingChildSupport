@@ -393,18 +393,6 @@ fields:
       variable: user_ask_role
       is: "defendant"
 ---
-# TODO(brycew): move this to mlhframework
-template: help_user_ask_role_template
-subject: |
-  How do I know?
-content: |
-  You can find the parties by looking at the first page of an existing court document, like a complaint, petition, or answer. The top of the first page is the “caption” which has the basic case information. This area will list all of the parties in the case with their titles.
-
-  ${ image_plaintiff_or_defendant.show(width="100%") }
-
-  If you were the first person to file a form to start this case, you are the Plaintiff. If someone else started this case by filing in court, you
-  are the Defendant.
----
 id: public record fyi
 question: |
   The information you put on your form is a public record
@@ -788,16 +776,6 @@ content: |
   * A parent's ability to earn money has changed; or
   * There has been a change in health care coverage.
 ---
-# TODO(brycew): Move this earlier in the interview?
-id: circumstances_kickout
-event: circumstances_kickout
-question: |
-  You cannot use this tool to prepare a Motion Regarding Support
-subquestion: |
-  Michigan law requires either an **agreement** or a **change in circumstances** for the court to change a child support order.
-
-  If you made a mistake, click the **${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
----
 # TODO(brycew): copied from LHI, adjust text to what's actually in our form
 id: efile note question
 question: |
@@ -1110,7 +1088,6 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    # - does_not_follow_cs_formula: base_support_matches_calc != "used_mi_calc"
     # TODO(brycew): continue here
 ---
 attachment:
