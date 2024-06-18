@@ -33,6 +33,8 @@ question: |-
   Review your answers
 
 review:
+  - note: |
+      <h2 class="h3">Your Case Information</h2>
   - Edit: users.revisit
     button: |-
       **You**
@@ -78,9 +80,9 @@ review:
   - Edit:
       - user_ask_role
       - recompute:
-        - which_side_paid
         - plaintiffs
         - defendants
+        - which_side_paid
     button: |
       **What party are you in your existing case?**
 
@@ -89,15 +91,16 @@ review:
       ---
 
       <h2 class="h3">Prior Support Order</h2>
-  - Edit:
-      - has_existing_support_order
-      - recompute:
-        - set_all_existing_support
-    button: |
-      **Do you have a child support order in your case ${ docket_number }**: ${ word(yesno(has_existing_support_order)) }
+  - note: |
+      % if has_existing_support_order:
+      **You have an existing support order.** 
+      % else:
+      **You do NOT have an existing support order.**
+      % endif
+      (If you need to change this answer, please start over from the beginning.)
   - Edit: recent_judgment_date
     button: |
-      **What date was the most recent judgment entered?**: ${ showifdef('recent_judgment_date') }
+      **What date was the most recent support order entered?**: ${ showifdef('recent_judgment_date') }
     show if: has_existing_support_order
   - Edit:
       - who_paid
@@ -121,34 +124,46 @@ review:
   - Edit: paid_child_care
     button: |
       **Monthly child care costs**
-
-      Was ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      
+      % if who_paid == "user":
+      Were you ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      % else:
+      Was ${ other_parties[0].name.familiar() } ordered to pay monthly child care costs?: ${ word(yesno(paid_child_care)) }
+      % endif
 
       % if paid_child_care:
-      How much in child care costs were they ordered to pay per month?: ${ currency(showifdef('child_care_amount')) }
+      How much child care costs were ordered per month?: ${ currency(showifdef('child_care_amount')) }
       % endif
   - Edit: |-
       paid_medical_costs
     button: |
       **Monthly Ordinary medical costs**
-
-      Was the ${ plaintiffs[0].name.familiar() if who_paid == "plaintiff" else defendants[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+      
+      % if who_paid == "user":
+      Were you ordered to pay ordinary medical costs costs?: ${ word(yesno(paid_medical_costs)) }
+      % else:
+      Was ${ other_parties[0].name.familiar() } ordered to pay ordinary medical costs?: ${ word(yesno(paid_medical_costs)) }
+      % endif
 
       % if paid_medical_costs:
-      How much in ordinary medical costs were they ordered to pay per month?: ${ currency(showifdef('medical_care_amount')) }
+      How much ordinary medical costs were ordered per month?: ${ currency(showifdef('medical_care_amount')) }
       % endif
   - note: |
       ---
 
       <h2 class="h3">Agreement Information</h2>
-  - Edit: |-
-      agreed_on_who_pays
+  - Edit:
+      - agreed_on_who_pays
+      - recompute:
+        - circumstance_changes_update
     button: |
       **Have you and ${ other_parties } agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
-  - Edit: |-
-      have_circumstances_changed
+  - Edit:
+      - have_circumstances_changed
+      - recompute:
+        - circumstance_changes_update
     button: |
       **Have circumstances changed?**
 
@@ -182,6 +197,21 @@ review:
       ${ other_parties[0] }
       % endif
       % endif
+  - Edit: 
+      - base_support_matches_calc
+      - recompute:
+        - new_support_info
+    button: |
+      **MI Child Support Calculator**
+      
+      % if base_support_matches_calc == "used_mi_calc":
+      The support amounts were calculated using the MiChildSupport Calculator.
+      % elif base_support_matches_calc == "different_from_mi_calc":
+      The support amounts are different from the MiChildSupport Calculator amounts.
+      % else:
+      I was unable to use the MiChildSupportCalculator.
+      % endif
+     
   - Edit: |-
       base_support_new
     button: |

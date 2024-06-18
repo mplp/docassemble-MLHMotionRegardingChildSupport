@@ -16,6 +16,7 @@ metadata:
   authors:
     - Bryce Willey
     - Amy Billmire
+    - Emily Miller
 ---
 code: |
   interview_short_title = "Motion Regarding Child Support"
@@ -106,17 +107,21 @@ code: |
   if not has_existing_case:
     existing_case_kickout
   what_you_will_need
-  docket_number
+
   has_existing_support_order
   if has_existing_support_order:
     recent_judgment_date
-
-  county_choice
-  court_index
-  the_court
+  agreed_on_who_pays
+  if has_existing_support_order and not agreed_on_who_pays:
+    circumstance_changes
 
   if not is_parent or third_party_named:
     parent_third_party_kickout
+    
+  county_choice
+  court_index
+  the_court
+  docket_number
 
   nav.set_section("review_your_info")
   user_started_case
@@ -132,20 +137,13 @@ code: |
   set_all_existing_support
 
   nav.set_section("review_agreement")
-  if has_existing_support_order and not agreed_on_who_pays:
-    if not have_circumstances_changed:
-      circumstances_kickout
-    circumstance_changes
 
   nav.set_section("review_support_requested")
   support_formula_fyi
   who_pays_new
   base_support_matches_calc
-  base_support_new
-  child_care_new
-  ordinary_medical_new
-  is_additional_amount_new
-  asking_for_payer_benefits_credit
+  new_support_info
+    
 
   nav.set_section("review_conclusion")
   # TODO(#7): do we need hearing info?
@@ -159,6 +157,9 @@ code: |
   if esign:
     signature_date
   
+  plaintiffs
+  defendants
+    
   interview_motion_regarding_child_support = True
 ---
 mandatory: True
@@ -178,12 +179,32 @@ code: |
   if has_existing_support_order:
     current_child_support_signpost
     who_paid
+    which_side_paid
     subtotal_amount
     paid_child_care
     paid_medical_costs
   set_all_existing_support = True
 ---
-id: intro screen
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    undefine('base_support_new', 'child_care_new', 'ordinary_medical_new', 'is_additional_amount_new', 'asking_for_payer_benefits_credit')
+  else:
+    base_support_new
+    child_care_new
+    ordinary_medical_new
+    is_additional_amount_new
+    asking_for_payer_benefits_credit
+  new_support_info = True
+---
+code: | 
+  if has_existing_support_order and not agreed_on_who_pays:
+    circumstance_changes
+  else:
+    undefine('have_circumstances_changed')
+    undefine('circumstance_changes')
+  circumstance_changes_update = True
+---
+id: intro screen FirstScreen
 question: |
   Welcome to the Do-It-Yourself Motion to Change or Get Child Support tool
 subquestion: |
@@ -235,7 +256,7 @@ subquestion: |
   You said you already do not have an existing Michigan divorce, separate maintenance, paternity, custody, or family support case.
   You must have one to continue to use this tool.
   
-  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
+  If you made a mistake, click the **${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 ---
 id: what_you_will_need
 question: |
@@ -341,7 +362,7 @@ question: |
 subquestion: |
   This tool may only be used to prepare a Motion Regarding Support in an existing Michigan family court case between two parents, with no third-party involvement.
 
-  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
+  If you made a mistake, click the **${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 ---
 id: what is the user's role?
 question: |
@@ -495,11 +516,15 @@ fields:
 depends on:
   - who_paid
   - user_started_case
+  - has_existing_support_order
 code: |
-  if (who_paid == "user" and user_started_case) or (who_paid == "other_party" and not user_started_case):
-    which_side_paid = "plaintiff" 
+  if has_existing_support_order:
+    if (who_paid == "user" and user_started_case) or (who_paid == "other_party" and not user_started_case):
+      which_side_paid = "plaintiff" 
+    else:
+      which_side_paid = "defendant"
   else:
-    which_side_paid = "defendant"
+    which_side_paid = ""
 ---
 id: subtotal amount
 question: |
@@ -554,16 +579,6 @@ fields:
     label above field: True
     datatype: currency
     show if: paid_medical_costs
----
-id: agreed on who pays
-question: |
-  Have you and ${ other_parties } agreed on who should pay support and how much?
-fields:
-  - no label: agreed_on_who_pays
-    datatype: radio
-    choices: 
-      - Yes, we have agreed: True
-      - No, we have not agreed: False
 ---
 id: child support formula FYI
 question: |
@@ -701,16 +716,68 @@ fields:
     datatype: currency
     show if: asking_for_payer_benefits_credit
 ---
-id: have_circumstances_changed
+if: has_existing_support_order
+id: agreement and circumstances change
 question: |
-  Have circumstances changed?
+  Asking for a new order
 subquestion: |
-  The court may only change the amount of child support if there has been a change in circumstances since the judge signed the last support order. Examples of changes in circumstances are:
-
-  ${ circumstance_examples.content }
+  The judge can only change your child support order if:
+  
+  * you and the other parent **agree to the change** or 
+  * there has been a **change in circumstances** since the judge signed the last support order. 
 fields:
+  - Have you and the other parent agreed on who should pay support and how much?: agreed_on_who_pays
+    datatype: radio
+    label above field: True
+    choices: 
+      - Yes, we have agreed: True
+      - No, we have not agreed: False
   - Have circumstances changed?: have_circumstances_changed
     datatype: yesnoradio
+    label above field: True
+    show if:
+      variable: agreed_on_who_pays
+      is: False
+  - note: |
+      ${ collapse_template(circumstance_examples) }
+    show if:
+      variable: agreed_on_who_pays
+      is: False
+  - note: |
+       If the answer to **both** questions is **"No,"** you cannot use this tool to request a change to your support order. Return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal resources.
+    show if:
+      variable: have_circumstances_changed
+      is: False
+validation code: |
+  if not agreed_on_who_pays and not have_circumstances_changed:
+    validation_error("To change a support order, you must either reach an agreement with the other parent or show that circumstances have changed.")
+---
+if: not has_existing_support_order
+id: agreement
+question: |
+  Have you and the other parent agreed on the new support order?
+fields:
+  - Have you and the other parent agreed on who should pay support and how much?: agreed_on_who_pays
+    datatype: radio
+    label above field: True
+    choices: 
+      - Yes, we have agreed: True
+      - No, we have not agreed: False
+---
+id: circumstance_changes
+question: |
+  How have your circumstances changed?
+subquestion: |
+  Explain in detail, and use complete sentences.
+  
+  Your answer will be attached to your *Motion Regarding Support*.
+  It will help the court decide whether child support should be changed at this time.
+  
+  ${ collapse_template(circumstance_examples) }
+fields:
+  - How have your circumstances changed?: circumstance_changes
+    input type: area
+    label above field: True
 ---
 template: circumstance_examples
 subject: What are some examples of changes in circumstances?
@@ -721,29 +788,15 @@ content: |
   * A parent's ability to earn money has changed; or
   * There has been a change in health care coverage.
 ---
-id: circumstance_changes
-question: |
-  How have your circumstances changed?
-subquestion: |
-  Explain in detail, and use complete sentences.
-
-  Your answer will be attached to your *Motion Regarding Support*.
-  It will help the court decide whether child support should be changed at this time.
-
-  ${ collapse_template(circumstance_examples) }
-fields:
-  - no label: circumstance_changes
-    input type: area
----
 # TODO(brycew): Move this earlier in the interview?
 id: circumstances_kickout
 event: circumstances_kickout
 question: |
   You cannot use this tool to prepare a Motion Regarding Support
 subquestion: |
-  Michigan law requires a change in circumstances for the court to change a child support order.
+  Michigan law requires either an **agreement** or a **change in circumstances** for the court to change a child support order.
 
-  If you made a mistake, click the **< ${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
+  If you made a mistake, click the **${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
 ---
 # TODO(brycew): copied from LHI, adjust text to what's actually in our form
 id: efile note question
@@ -787,7 +840,7 @@ fields:
   - Would you like to add your electronic signature to your form?: esign
     datatype: yesnoradio
 ---
-id: download child support motion
+id: download child support motion DownloadScreen
 event: motion_child_support_download
 question: |
   All done
@@ -908,20 +961,46 @@ include:
 objects:
   - mrcs_instructions: ALDocument.using(title="Instructions", filename="Instructions.docx", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx", enabled=True)
-  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", enabled=True, has_addendum=False)
-  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", enabled=True, has_addendum=False)
+  - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
+  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", has_addendum=False)
+  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", has_addendum=False)
+  - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral Order - FOC 12.pdf", has_addendum=False)
 ---
 objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
-  - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[mrcs_instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    mrcs_foc10.enabled = False
+  else:
+    mrcs_foc10.enabled = True
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc" and (agreed_on_who_pays or not has_existing_support_order):
+    mrcs_attachment_addendum.enabled = False
+  else:
+    mrcs_attachment_addendum.enabled = True
+---
+code: |
+  if base_support_matches_calc == "different_from_mi_calc":
+    mrcs_foc10d.enabled = True
+  else:
+    mrcs_foc10d.enabled = False
+---
+code: |
+  if base_support_matches_calc == "unable_to_use_mi_calc":
+    mrcs_foc12.enabled = True
+  else:
+    mrcs_foc12.enabled = False
 ---
 attachment:
   variable name: mrcs_attachment_addendum[i]
-  docx template file: Motion Regarding Support Addendum.docx
+  docx template file: Motion_Regarding_Support_Addendum.docx
+  skip undefined: True
 ---
 code: |
   # TODO(brycew): we don't really need to treat the addendum like an addendum?
@@ -941,7 +1020,7 @@ attachment:
   filename: Motion Regarding Support - FOC 50
   variable name: mrcs_attachment_main[i]
   skip undefined: True
-  pdf template file: Motion Regarding Support - FOC 50.pdf
+  pdf template file: MotionRegardingSupport-FOC50.pdf
   editable: False
   fields:
     - trial_court_circuit: |
@@ -982,9 +1061,10 @@ attachment:
     - defendant_pays_medical: ${ has_existing_support_order and paid_medical_costs and which_side_paid == "defendant" }
     - medical_care_amount: ${ thousands(medical_care_amount if paid_medical_costs else "", show_decimals=True) if has_existing_support_order else "" }
     - conditions_have_changed: ${ have_circumstances_changed if has_existing_support_order and not agreed_on_who_pays else False}
-    - other_parties: ${ other_parties if agreed_on_who_pays else "" }
-    - is_new_agreement: ${ agreed_on_who_pays }
-    - is_new_agreement__2: ${ agreed_on_who_pays }
+    - other_parties: ${ other_parties if agreed_on_who_pays and not base_support_matches_calc == "unable_to_use_mi_calc" else "" }
+    - is_new_agreement: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
+    - is_new_agreement__2: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
+    - order_request: ${ "I ask the court to enter a referral order to the Friend of the Court for a support investigation." if base_support_matches_calc == "unable_to_use_mi_calc" else "" } 
     - signature_date: ${ signature_date if esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
     #- judge_name: ${ judge.name if has_hearing_info else "" }
@@ -1007,10 +1087,9 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
+    # Actually county
     - trial_court_district: |
-          % if the_court.type == 'district':
-          ${ the_court.number }
-          % endif
+          ${ the_court.address.county }
     - CASE NO: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
@@ -1045,14 +1124,12 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
+    # Actually county
     - trial_court_district: |
-          % if the_court.type == 'district':
-          ${ the_court.number }
-          % endif
+          ${ the_court.address.county }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - CASE NO: ${ docket_number }
-    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
     - plaintiffs: ${ plaintiffs }
     - defendants: ${ defendants }
@@ -1064,4 +1141,29 @@ attachment:
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
     # TODO(brycew): continue here
-
+---
+attachment:
+  name: Referral Order
+  variable name: mrcs_foc12[i]
+  skip undefined: True
+  editable: True
+  pdf template file: ReferralOrder-FOC12.pdf
+  fields:
+    - trial_court_circuit: |
+          % if the_court.type == 'circuit':
+          ${ the_court.number }
+          % endif
+    - trial_court_county: |
+          ${ the_court.address.county }
+    - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
+    - CASE NO: ${ docket_number }
+    - trial_court_phone_number: ${ the_court.phone }
+    - plaintiffs: |
+          ${ plaintiffs }  
+          ${ plaintiffs[0].address.on_one_line() }  
+          ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
+    - defendants: |
+          ${ defendants }  
+          ${ defendants[0].address.on_one_line() }  
+          ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
+    - investigation_requested: True
