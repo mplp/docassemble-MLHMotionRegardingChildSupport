@@ -2,6 +2,9 @@ include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.mlhframework:mlh_interview_framework.yml
 ---
+modules:
+  - docassemble.demo.accordion
+---
 metadata:
   title: |
     Motion to Change or Get Child Support
@@ -87,23 +90,25 @@ code: |
   children[i].complete = True
 ---
 sections:
-  - review_intro: "Introduction"
-  - review_prior_case: "Prior Case Information"
-  - review_your_info: "Your Information"
-  - review_other_info: "Other Parent's Information"
-  - review_children_info: "Children Information"
-  - review_prior_order: "Prior Order Information"
-  - review_agreement: "Agreement Information"
-  - review_support_requested: "Support Requested Information"
-  - review_conclusion: "Conclusion"
+  - signpost_intro: "Introduction"
+  - signpost_prior_case: "Prior Case Information"
+  - signpost_your_info: "Your Information"
+  - signpost_other_info: "Other Parent's Information"
+  - signpost_children_info: "Children Information"
+  - signpost_prior_order: "Prior Order Information"
+  - signpost_agreement: "Agreement Information"
+  - signpost_support_requested: "Support Requested Information"
+  - signpost_download: "Get Your Forms"
+  - review_full: "✎ <u>Review / Edit</u>"
 ---
 id: interview_order_motion_regarding_child_support
 code: |
-  nav.set_section("review_intro")
+  nav.set_section("review_full")
+  nav.set_section("signpost_intro")
   intro_screen
   MLH_standard_intro_pages
 
-  nav.set_section("review_prior_case")
+  nav.set_section("signpost_prior_case")
   if not has_existing_case:
     existing_case_kickout
   what_you_will_need
@@ -123,29 +128,29 @@ code: |
   the_court
   docket_number
 
-  nav.set_section("review_your_info")
+  nav.set_section("signpost_your_info")
   user_started_case
   public_record_fyi
 
   users.gather()
-  nav.set_section("review_other_info")
+  nav.set_section("signpost_other_info")
   other_parties.gather()
-  nav.set_section("review_children_info")
+  nav.set_section("signpost_children_info")
   children.gather()
 
-  nav.set_section("review_prior_order")
+  nav.set_section("signpost_prior_order")
   set_all_existing_support
 
-  nav.set_section("review_agreement")
+  nav.set_section("signpost_agreement")
 
-  nav.set_section("review_support_requested")
+  nav.set_section("signpost_support_requested")
   support_formula_fyi
   who_pays_new
   base_support_matches_calc
   new_support_info
     
 
-  nav.set_section("review_conclusion")
+  nav.set_section("signpost_download")
   # TODO(#7): do we need hearing info?
   #if has_hearing_info:
   #  hearing_at_court
@@ -827,7 +832,7 @@ subquestion: |
   
   View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
 
-  ${ action_button_html(url_action('review_form'), label='Edit answers', color='info') }
+  ${ action_button_html(url_action('review_full'), label='Edit answers', color='info') }
   
   ${ al_user_bundle.download_list_html() }
 
