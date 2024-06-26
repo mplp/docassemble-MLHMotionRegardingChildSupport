@@ -135,7 +135,7 @@ review:
       ---
 
       <h2 class="h3">Agreement Information</h2>
-    show if: agreed_on_who_pays
+    show if: agreed_on_who_pays or not agreed_on_who_pays
   - Edit:
       - agreed_on_who_pays
       - recompute:
