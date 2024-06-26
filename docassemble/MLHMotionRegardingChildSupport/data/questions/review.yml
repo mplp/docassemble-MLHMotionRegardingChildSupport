@@ -6,14 +6,16 @@ question: |-
   Review your answers
 
 review:
-  - raw html: |
-      ${ start_accordion('<h2 class="h5">How does this page work?</h2>') }
   - note: |
+      % if defined('docket_number'):
+      Tap below to open different sections and edit answers.
+      % else:
       This page starts out blank. As you answer more questions, they will show up here. Then you can edit your answers.
       
-      Some questions will not show up here. To change an answer that does not appear on this page, use the **Undo** button or start the interview again.    
+      Some questions will not show up here. To change an answer that does not appear on this page, use the **Undo** button or start the interview again.  
+      % endif
   - raw html: |
-      ${ next_accordion('<h2 class="h5">Your Case Information</h2>') }
+      ${ start_accordion('<h2 class="h5">Your Case Information</h2>') }
     show if: docket_number
   - Edit: users.revisit
     button: |-
@@ -239,6 +241,7 @@ review:
       **Would you like to add your electronic signature to your form?**: ${ word(yesno(esign)) }
   - raw html: |
       ${ end_accordion() }
+    show if: docket_number
 ---
 id: revisit users
 question: Edit your answers about yourself
