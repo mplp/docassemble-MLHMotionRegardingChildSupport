@@ -1,31 +1,4 @@
-event: review_intro
-code: review_form
----
-event: review_prior_case
-code: review_form
----
-event: review_your_info
-code: review_form
----
-event: review_other_info
-code: review_form
----
-event: review_children_info
-code: review_form
----
-event: review_prior_order
-code: review_form
----
-event: review_agreement
-code: review_form
----
-event: review_support_requested
-code: review_form
----
-event: review_conclusion
-code: review_form
----
-event: review_form
+event: review_full
 id: |-
   review screen
 
@@ -34,7 +7,16 @@ question: |-
 
 review:
   - note: |
-      <h2 class="h3">Your Case Information</h2>
+      % if defined('docket_number'):
+      Tap below to open different sections and edit answers.
+      % else:
+      This page starts out blank. As you answer more questions, they will show up here. Then you can edit your answers.
+      
+      Some questions will not show up here. To change an answer that does not appear on this page, use the **Undo** button or start the interview again.  
+      % endif
+  - raw html: |
+      ${ start_accordion('<h2 class="h5">Your Case Information</h2>') }
+    show if: docket_number
   - Edit: users.revisit
     button: |-
       **You**
@@ -87,17 +69,16 @@ review:
       **What party are you in your existing case?**
 
       ${ showifdef('user_ask_role').capitalize() }
-  - note: |
-      ---
-
-      <h2 class="h3">Prior Support Order</h2>
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Prior Support Order</h2>') }
+    show if: has_existing_support_order or not has_existing_support_order
   - note: |
       % if has_existing_support_order:
       **You have an existing support order.** 
       % else:
       **You do NOT have an existing support order.**
       % endif
-      (If you need to change this answer, please start over from the beginning.)
+      (If you need to change this answer, please use the **Undo** button or start over from the beginning.)
   - Edit: recent_judgment_date
     button: |
       **What date was the most recent support order entered?**: ${ showifdef('recent_judgment_date') }
@@ -148,16 +129,15 @@ review:
       % if paid_medical_costs:
       How much ordinary medical costs were ordered per month?: ${ currency(showifdef('medical_care_amount')) }
       % endif
-  - note: |
-      ---
-
-      <h2 class="h3">Agreement Information</h2>
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Agreement Information</h2>') }
+    show if: agreed_on_who_pays or not agreed_on_who_pays
   - Edit:
       - agreed_on_who_pays
       - recompute:
         - circumstance_changes_update
     button: |
-      **Have you and ${ other_parties } agreed on who should pay support and how much?**
+      **Have you and the other parent agreed on who should pay support and how much?**
 
       ${ word(yesno(agreed_on_who_pays)) }
   - Edit:
@@ -175,10 +155,9 @@ review:
 
       ${ showifdef('circumstance_changes') }
     show if: have_circumstances_changed
-  - note: |
-      ---
-
-      <h2 class="h3">Support Requested Information</h2>
+  - raw html: |
+      ${ next_accordion('<h2 class="h5">Support Requested Information</h2>') }
+    show if: who_pays_new
   - label: Edit
     fields:
       - who_pays_new
@@ -257,40 +236,12 @@ review:
       How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: ${ currency(showifdef('child_benefit_amount')) }
       % endif
   - Edit: |-
-      esign
+      MLH_esign
     button: |
-      **Would you like to add your electronic signature to your form?**: ${ word(yesno(esign)) }
-  - Edit: |-
-      has_hearing_info
-    button: |
-      **Motion Hearing Information**
-
-      ${ word(yesno(has_hearing_info)) }
-  - Edit: |-
-      hearing_date
-    button: |
-      **When will the hearing be?**
-
-      Date of hearing: ${ showifdef('hearing_date') }
-
-      Hearing Time: ${ showifdef('hearing_time') }
-  - Edit: |-
-      hearing_at_court
-    button: |
-      **Where will the hearing be?**
-
-      Will the hearing be in person at the courthouse?: ${ word(yesno(hearing_at_court)) }
-
-      * Type the address if it will be at a physical location. * If the hearing will be online or by phone, briefly explain.: ${ showifdef('hearing_address_on_one_line') }
-  - Edit: |-
-      judge.name
-    button: |
-      **What judge will hear your motion?**
-
-      Judge's name: ${ showifdef('judge.name') }
-
-      Judge's bar number: ${ showifdef('judge_bar_number') }
-
+      **Would you like to add your electronic signature to your form?**: ${ word(yesno(MLH_esign)) }
+  - raw html: |
+      ${ end_accordion() }
+    show if: docket_number
 ---
 id: revisit users
 question: Edit your answers about yourself
