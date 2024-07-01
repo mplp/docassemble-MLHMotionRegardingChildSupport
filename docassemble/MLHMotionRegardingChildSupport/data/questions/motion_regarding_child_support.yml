@@ -9,7 +9,7 @@ metadata:
   title: |
     Motion to Change or Get Child Support
   short title: |
-    Motion Regarding Child Support
+    Motion to Change or Get Child Support
   description: |-
     Use this tool to prepare forms to ask the court to change a Child Support Order, or to get a
     Child Support Order if you need one in a divorce case, custody case, paternity case, or other
@@ -33,6 +33,20 @@ code: |
 code: |
   MLH_time_min = 20
   MLH_time_max = 60
+  MLH_materials_included = True
+  MLH_form_type = "forms"
+---
+template: MLH_materials              
+content: |
+  * the case number, 
+  * court information, and 
+  * information about the parties from your existing case.
+  
+  ${ collapse_template(where_info_on_papers_template) }
+---
+template: MLH_welcome_message     
+content: |
+  Welcome to the ${ MLH_interview_short_title } tool.
 ---
 # TODO(#1): the images are fairly small inside the collapsed templates; can we make them bigger?
 objects:
@@ -105,13 +119,20 @@ id: interview_order_motion_regarding_child_support
 code: |
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
-  intro_screen
-  MLH_standard_intro_pages
-
+  MLH_intro_landing
+  substantive_intro
+  more_help_intro
+  support_calc_intro
+  deviation_intro
+  cannot_calc_support_intro
+  MLH_agree_terms
+  MLH_intro_navigate_save
+  if MLH_intro_agree_no_pii == False:
+    MLH_intro_agree_no_pii_exit
+  
   nav.set_section("signpost_prior_case")
   if not has_existing_case:
     existing_case_kickout
-  what_you_will_need
 
   has_existing_support_order
   if has_existing_support_order:
@@ -157,10 +178,11 @@ code: |
   #  hearing_time
   #  judge.name
   #  judge_bar_number
-
-  efile_notice
-  if esign:
+  
+  MLH_outro_filing_information
+  if MLH_esign:
     signature_date
+  MLH_outro_saving_answers
   
   plaintiffs
   defendants
@@ -209,26 +231,29 @@ code: |
     undefine('circumstance_changes')
   circumstance_changes_update = True
 ---
-id: intro screen FirstScreen
+id: more help intro screen
 question: |
-  Welcome to the Do-It-Yourself Motion to Change or Get Child Support tool
+  Who should use this tool?
 subquestion: |
-  This tool can help you prepare the forms to file a *Motion Regarding Support* in Michigan.
-
   This tool is only for parents who:
 
   * Have a child support order in a Michigan court case and want to file a motion to change the amount of child support; **OR**
-  * Filed a Michigan divorce, custody, or child support case, and want to ask the court for a temporary child support order; **OR**
+  * Filed a Michigan divorce, custody, or child support case, and want to ask the court for a {temporary child support order}; **OR**
   * Have a Michigan Judgment of Divorce or final order in a custody or paternity case that does not include child support, and want to ask the court to order child support in that case now.
 
   To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
 
   If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
-continue button field: intro_screen
+continue button field: substantive_intro
+terms:
+  temporary child support order: |
+    You may want to ask for a temporary child support order if it will be a while before your case is finished and you need child support before then. 
+    
+    A temporary order is in effect while the case is pending. A final child support order will replace the temporary order when you finish your court case.
 comment: |
   TODO: add direct links to Changing a Child Support Order and Getting a Child Support Order
 ---
-id: MLH intro landing
+id: more help intro
 question: |
   Need more help?
 subquestion: |
@@ -242,7 +267,45 @@ subquestion: |
   * You aren't sure what to do.
 
   ${ MLH_GUIDE_FULL }
-continue button field: MLH_intro_landing
+continue button field: more_help_intro
+---
+id: intro to support calculation
+question: |
+  Calculating child support
+subquestion: |
+  **Important!**
+  
+  In general, child support in Michigan must follow the Michigan Child Support Formula. You can calculate child support based on the Formula by using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) on the {MDHHS} website. The Calculator will create a results page with the amounts of child support (base support, ordinary medical, etc.) and other numbers you will need for your motion and order.
+
+  **You will likely have a better and faster outcome to your motion if you:**
+  
+  * Calculate child support using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) BEFORE you use this tool, AND
+  * Use the numbers on the Calculator results page to answer the questions in this tool about the support amounts you want, AND
+  * Fill out the Uniform Child Support Order you will get at the end of this tool using the Calculator results page. You will see a reminder to fill out the Support Order in the instructions you can download at the end of this tool.
+terms:
+  MDHHS: |
+    Michigan Department of Health and Human Services
+continue button field: support_calc_intro
+---
+id: child support deviation intro
+question: |
+  Asking for a child support deviation
+subquestion: |
+  Sometimes a parent asks for a child support amount that differs from the Formula amount, called a support deviation. This tool will give you the option to ask for a deviation instead of the Child Support Formula amount. 
+  
+  However, you will have to show the court that the Formula amount is unfair or inappropriate. This is required even if the parties agree to a deviation. You will also need to fill out and file a form called the Uniform Child Support Order Deviation Addendum, along with your Motion Regarding Support and Uniform Child Support Order.
+  
+  This tool will provide you with a blank Deviation Addendum if you want to ask for a deviation. You will see information about filling out the Deviation Addendum in the instructions you can download at the end of this tool.
+continue button field: deviation_intro
+---
+id: intro - if can't calculate support
+question: |
+  If you can’t calculate child support
+subquestion: |
+  If you have trouble using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) and you’re not sure what the new support amounts should be, you can answer “I don’t know” to the questions this tool asks you about support numbers. 
+  
+  If you answer this way, this tool will produce a motion asking the court to refer you to the Friend of the Court for a support investigation, along with a referral order. You will see more information in the instructions you can download at the end of this tool.
+continue button field: cannot_calc_support_intro
 ---
 id: has_existing_case
 question: |
@@ -262,19 +325,6 @@ subquestion: |
   You must have one to continue to use this tool.
   
   If you made a mistake, click the **${ MLH_back_button_label }** button to change your answer. Otherwise, you can return to [Michigan Legal Help](https://michiganlegalhelp.org) for other legal information or resources.
----
-id: what_you_will_need
-question: |
-  What you will need to complete this form
-subquestion: |
-  To complete this form, you will need:
-
-  * the case number,
-  * court information, and
-  * information about the parties from your existing case
-
-  ${ collapse_template(where_info_on_papers_template) }
-continue button field: what_you_will_need
 ---
 template: where_info_on_papers_template
 subject: |
@@ -781,48 +831,6 @@ content: |
   * A parent's ability to earn money has changed; or
   * There has been a change in health care coverage.
 ---
-# TODO(brycew): copied from LHI, adjust text to what's actually in our form
-id: efile note question
-question: |
-  Completing this process does not file your forms with the court
-subquestion: |
-  You need to file them at court in person, by mail, e-mail, or by e-filing.
-  If you are e-filing, you must use [MiFILE](https://mifile.courts.michigan.gov/).
-  Read the instructions that you will get with your forms for more information.
-
-  ${ collapse_template(am_i_going_to_efile) }
-
-  This tool will create separate forms so you can more easily e-file using MiFILE, if you plan to e-file.
-  This means that you may need to download multiple files to get all of the forms you will need.
-
-  You will be able to get all forms you need by clicking the Download Your Form(s) button on the page at the end of this tool.
-  You will then see a list of documents to download. Make sure you download each of them.
-continue button field: efile_notice
----
-template: am_i_going_to_efile
-subject: |
-  How do I know if I am going to e-file?
-content: |
-  Not all courts offer e-filing at this time. To find out if your court has e-filing, read the
-  [What is E-Filing?](https://michiganlegalhelp.org/resources/mifile/what-e-filing) article.
-  The article tells you how to find out which courts have e-filing and what kinds of cases those courts are accepting by e-filing.
-
-  Look for the two-letter case type code at the end of your case number.
-  (This could be DM, DC, DS, DP, or a different code.)
----
-id: Electronic signature question
-question: |
-  Electronic Signature
-subquestion: |
-  This tool can put "*/s/ ${ users[0] }*" where you would sign your name so you do not have to sign the form by hand. The court will accept this as your signature.
-
-  If you plan to e-file, you may want to add your electronic signature, otherwise you will need to print your forms, sign them by hand, and then scan them.
-
-  ${ collapse_template(efiling_info_template) }
-fields:
-  - Would you like to add your electronic signature to your form?: esign
-    datatype: yesnoradio
----
 id: download child support motion DownloadScreen
 event: motion_child_support_download
 question: |
@@ -1048,8 +1056,8 @@ attachment:
     - is_new_agreement: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
     - is_new_agreement__2: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
     - order_request: ${ "I ask the court to enter a referral order to the Friend of the Court for a support investigation." if base_support_matches_calc == "unable_to_use_mi_calc" else "" } 
-    - signature_date: ${ signature_date if esign else "" }
-    - users1_signature: ${ f"/s/ {users[0]}" if esign else "" }
+    - signature_date: ${ signature_date if MLH_esign else "" }
+    - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
     #- judge_name: ${ judge.name if has_hearing_info else "" }
     #- judge_bar_number: ${ judge_bar_number if has_hearing_info else "" }
     #- hearing_date: ${ format_date(hearing_date) if has_hearing_info else "" }

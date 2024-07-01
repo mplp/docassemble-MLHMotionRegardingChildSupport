@@ -236,9 +236,9 @@ review:
       How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: ${ currency(showifdef('child_benefit_amount')) }
       % endif
   - Edit: |-
-      esign
+      MLH_esign
     button: |
-      **Would you like to add your electronic signature to your form?**: ${ word(yesno(esign)) }
+      **Would you like to add your electronic signature to your form?**: ${ word(yesno(MLH_esign)) }
   - raw html: |
       ${ end_accordion() }
     show if: docket_number
