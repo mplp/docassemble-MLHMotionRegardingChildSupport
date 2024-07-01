@@ -133,6 +133,8 @@ code: |
   nav.set_section("signpost_prior_case")
   if not has_existing_case:
     existing_case_kickout
+  if not is_parent or third_party_named:
+    parent_third_party_kickout
 
   has_existing_support_order
   if has_existing_support_order:
@@ -140,9 +142,6 @@ code: |
   agreed_on_who_pays
   if has_existing_support_order and not agreed_on_who_pays:
     circumstance_changes
-
-  if not is_parent or third_party_named:
-    parent_third_party_kickout
     
   county_choice
   court_index
