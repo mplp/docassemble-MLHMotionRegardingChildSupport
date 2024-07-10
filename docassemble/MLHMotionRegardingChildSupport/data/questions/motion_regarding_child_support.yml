@@ -964,7 +964,7 @@ objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
 ---
 objects:
-  - al_cover_bundle: ALDocumentBundle.using(elements=[cover_sheet_template, instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
+  - al_cover_bundle: ALDocumentBundle.using(elements=[instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[al_cover_bundle, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
