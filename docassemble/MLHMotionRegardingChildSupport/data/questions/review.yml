@@ -8,9 +8,9 @@ question: |-
 review:
   - note: |
       % if defined('docket_number'):
-      Tap below to open different sections and edit answers. To edit an answer that does not appear on this page, use the **Undo** button or start the interview again.  
+      ${ review_accordion_explainer }
       % else:
-      This page starts out blank. As you answer more questions, they will show up here. Then you can edit your answers.
+      ${ review_empty_explainer }
       % endif
   - raw html: |
       ${ start_accordion('<h2 class="h5">Your Case Information</h2>') }
