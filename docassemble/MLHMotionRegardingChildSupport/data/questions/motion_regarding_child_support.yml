@@ -2,9 +2,6 @@ include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.mlhframework:mlh_interview_framework.yml
 ---
-modules:
-  - docassemble.demo.accordion
----
 metadata:
   title: |
     Motion to Change or Get Child Support
@@ -21,11 +18,6 @@ metadata:
     - Amy Billmire
     - Emily Miller
 # to move to framework
----
-code: |
-  review_empty_explainer = "This page starts out blank. As you answer more questions, they will show up here. Then you can edit your answers."
-  review_accordion_explainer = "Tap below to open different sections and edit answers."
-  review_screen_prep = True
 ---
 code: |
   interview_short_title = "Motion Regarding Child Support"
