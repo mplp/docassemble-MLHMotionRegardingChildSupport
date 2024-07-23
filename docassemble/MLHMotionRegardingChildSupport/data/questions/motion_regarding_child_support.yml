@@ -121,7 +121,6 @@ id: interview_order_motion_regarding_child_support
 code: |
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
-  review_screen_prep
   MLH_intro_landing
   substantive_intro
   more_help_intro
