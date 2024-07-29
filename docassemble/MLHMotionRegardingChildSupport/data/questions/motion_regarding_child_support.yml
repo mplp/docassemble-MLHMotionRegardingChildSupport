@@ -680,7 +680,7 @@ fields:
     choices:
       - The support amounts were calculated using the MiChildSupport Calculator: used_mi_calc
       - The support amounts are different from the MiChildSupport Calculator amounts: different_from_mi_calc
-      - I was unable to use the MiChildSupportCalculator: unable_to_use_mi_calc
+      - I was unable to use the MiChildSupport Calculator: unable_to_use_mi_calc
 ---
 # TODO(brycew): helps hides again when you try to type in the answer; how bad of a UX is that?
 id: base support new question
