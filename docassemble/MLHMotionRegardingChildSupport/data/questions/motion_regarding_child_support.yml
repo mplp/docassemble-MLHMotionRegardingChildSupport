@@ -813,7 +813,7 @@ fields:
 ---
 id: circumstance_changes
 question: |
-  How have your circumstances changed?
+  How have circumstances changed?
 subquestion: |
   Explain in detail, and use complete sentences.
   
@@ -822,7 +822,7 @@ subquestion: |
   
   ${ collapse_template(circumstance_examples) }
 fields:
-  - How have your circumstances changed?: circumstance_changes
+  - How have circumstances changed?: circumstance_changes
     input type: area
     label above field: True
 ---
