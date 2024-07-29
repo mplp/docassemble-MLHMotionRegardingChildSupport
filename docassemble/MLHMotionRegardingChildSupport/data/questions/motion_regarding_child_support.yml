@@ -185,8 +185,10 @@ code: |
     signature_date
   MLH_outro_saving_answers
   
+  # load value of these so that they populate forms as expected
   plaintiffs
   defendants
+  which_side_pays_new
     
   interview_motion_regarding_child_support = True
 ---
