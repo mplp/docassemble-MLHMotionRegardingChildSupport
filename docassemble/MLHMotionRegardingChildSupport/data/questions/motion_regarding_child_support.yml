@@ -1059,7 +1059,14 @@ attachment:
     - other_parties: ${ other_parties if agreed_on_who_pays and not base_support_matches_calc == "unable_to_use_mi_calc" else "" }
     - is_new_agreement: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
     - is_new_agreement__2: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
-    - order_request: ${ "I ask the court to enter a referral order to the Friend of the Court for a support investigation." if base_support_matches_calc == "unable_to_use_mi_calc" else "" } 
+    - order_request: |
+          % if base_support_matches_calc == "unable_to_use_mi_calc":
+          ${"I ask the court to enter a referral order to the Friend of the Court for a support investigation."} 
+          % elif not agreed_on_who_pays:
+          ${"See attached."} 
+          % else: 
+          ${""} 
+          % endif
     - signature_date: ${ signature_date if MLH_esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
     #- judge_name: ${ judge.name if has_hearing_info else "" }
