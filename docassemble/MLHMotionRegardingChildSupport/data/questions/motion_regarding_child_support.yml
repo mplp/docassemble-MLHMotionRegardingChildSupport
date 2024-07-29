@@ -357,7 +357,7 @@ id: docket number
 question: |
   What is your case number?
 subquestion: |
-  Enter the case number from your divorce case, custody case, or other family support case.
+  Enter the case number from your divorce case, custody case, or other family court case.
 
   ${ collapse_template(where_case_number) }
 fields:
@@ -395,12 +395,12 @@ code: |
 ---
 id: is_parent
 question: |
-  Are you the parent of the child or children this Motion Regarding Support is for?
+  Are you a parent of the child or children this Motion Regarding Support is for?
 fields:
   - no label: is_parent
     datatype: radio 
     choices:
-      - Yes, I am the parent: True
+      - Yes, I am a parent: True
       - No, I am not the parent: False
 ---
 id: third_party_named
@@ -585,7 +585,7 @@ template: where_subtotal_amount
 subject: |
   Where do I find the Subtotal amount?
 content: |
-  You can find the subtotal amount on the second page of the Uniform Child Support Order, highlighted in yellow below.
+  You can find the subtotal amount on the second page of your Uniform Child Support Order. See the example highlighted in yellow below.
 
   If there are multiple children, choose the subtotal amount in the column that matches the number of children who are still covered by the order.
   Usually the child support obligation for each child ends on the last day of the month they turn 18. But in some cases, child support may continue up to age 19 and a half.
