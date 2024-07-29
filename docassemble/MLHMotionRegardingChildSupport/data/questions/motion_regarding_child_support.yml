@@ -1064,7 +1064,7 @@ attachment:
           % if base_support_matches_calc == "unable_to_use_mi_calc":
           ${"I ask the court to enter a referral order to the Friend of the Court for a support investigation."} 
           % elif not agreed_on_who_pays:
-          ${"See attached."} 
+          ${"  See attached."} 
           % else: 
           ${""} 
           % endif
