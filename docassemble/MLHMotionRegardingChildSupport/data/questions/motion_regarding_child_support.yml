@@ -739,16 +739,17 @@ question: |
   % else:
   Are
   % endif
-  you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
+  you asking the court to give the payer of child support a credit each month for **dependent benefits** received from a government insurance program?
 subquestion: |
-  If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
-  Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
-  The court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent
-  benefits should be subtracted from the support amount.
+  If the payer of child support gets retirement, survivor’s, or disability benefits from a government insurance program like Social Security, Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
+
+  In that case, the court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent benefits should be subtracted from the support amount.
 fields:
-  - Are you asking for the court to give ${ "you" if who_pays_new == "user" else other_parties[0] } a credit?: asking_for_payer_benefits_credit
-    label above field: True
-    datatype: yesnoradio
+  - no label: asking_for_payer_benefits_credit
+    datatype: radio
+    choices:
+      - Yes, I'm asking the court to give ${ "me" if who_pays_new == "user" else other_parties[0] } a credit for dependent benefits.: True
+      - No, I'm NOT asking the court to give ${ "me" if who_pays_new == "user" else other_parties[0] } a credit for dependent benefits.: False
   - What type of dependent benefit ${ "do your children" if len(children) > 1 else "does your child" } receive?: child_benefit_type
     label above field: True
     datatype: radio
