@@ -749,7 +749,7 @@ fields:
   - Are you asking for the court to give ${ "you" if who_pays_new == "user" else other_parties[0] } a credit?: asking_for_payer_benefits_credit
     label above field: True
     datatype: yesnoradio
-  - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
+  - What type of dependent benefit ${ "do your children" if len(children) > 1 else "does your child" } receive?: child_benefit_type
     label above field: True
     datatype: radio
     code: |
