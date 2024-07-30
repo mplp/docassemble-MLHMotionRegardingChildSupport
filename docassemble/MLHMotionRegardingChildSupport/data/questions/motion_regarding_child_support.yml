@@ -649,9 +649,9 @@ content: |
 id: who pays new
 question: |
   % if agreed_on_who_pays:
-  In your agreement with ${ other_parties }, who are you asking the court to pay support?
+  According to your agreement with ${ other_parties }, who should be ordered to pay support?
   % else:
-  Who are you asking the court to pay support?
+  Who should be ordered to pay support?
   % endif
 fields:
   - no label: who_pays_new
