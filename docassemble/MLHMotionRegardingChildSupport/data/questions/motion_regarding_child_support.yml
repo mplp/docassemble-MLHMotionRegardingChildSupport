@@ -736,12 +736,7 @@ objects:
 ---
 id: asking for payer benefits credit
 question: |
-  % if agreed_on_who_pays:
-  In the agreement, are
-  % else:
-  Are
-  % endif
-  you asking the court to give the payer of child support a credit each month for **dependent benefits** received from a government insurance program?
+  ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }
 subquestion: |
   If the payer of child support gets retirement, survivor’s, or disability benefits from a government insurance program like Social Security, Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
 
@@ -750,8 +745,8 @@ fields:
   - no label: asking_for_payer_benefits_credit
     datatype: radio
     choices:
-      - Yes, I'm asking the court to give ${ "me" if who_pays_new == "user" else other_parties[0] } a credit for dependent benefits.: True
-      - No, I'm NOT asking the court to give ${ "me" if who_pays_new == "user" else other_parties[0] } a credit for dependent benefits.: False
+      - Yes, my ${ "children get" if len(children) > 1 else "child gets" } dependent benefits based on ${ "my work record." if who_pays_new == "user" else other_parties[0].possessive('work record.') }: True
+      - No, my ${ "children do NOT" if len(children) > 1 else "child does NOT" } get dependent benefits based on ${ "my work record." if who_pays_new == "user" else other_parties[0].possessive('work record.') }: False
   - What type of dependent benefit ${ "do your children" if len(children) > 1 else "does your child" } receive?: child_benefit_type
     label above field: True
     datatype: radio
