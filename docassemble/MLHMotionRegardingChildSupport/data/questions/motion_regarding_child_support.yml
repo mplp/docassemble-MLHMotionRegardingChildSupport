@@ -336,7 +336,7 @@ content: |
   Here is an example of where you can find this information on your court papers.
 
   * The court information is circled in blue, on the top left.
-  * The case number is circled in yellow, on the top right.
+  * The case number has a yellow rectangle around it, on the top right.
   * The information about the parties is circled in red
 
   ${ image_court_papers.show(width="100%") }
