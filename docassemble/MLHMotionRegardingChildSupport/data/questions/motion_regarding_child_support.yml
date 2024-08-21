@@ -31,8 +31,8 @@ code: |
   al_form_type = "existing_case"
 ---
 code: |
-  accessible_instructions_link = "[https://michiganlegalhelp.org/step/2437](https://michiganlegalhelp.org/step/2437)"
-  resource_page_link = "[https://michiganlegalhelp.org/node/1083](https://michiganlegalhelp.org/node/1083)"
+  resource_page_url_only = "https://michiganlegalhelp.org/node/1083"
+  resource_page_name = "Filing to Change or Get a Child Support Order"
 ---
 code: |
   MLH_time_min = 20
