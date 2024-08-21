@@ -32,7 +32,7 @@ code: |
 ---
 code: |
   resource_page_url_only = "https://michiganlegalhelp.org/node/1083"
-  resource_page_name = "Filing to Change or Get a Child Support Order"
+  resource_page_link = "[Filing to Change or Get a Child Support Order](https://michiganlegalhelp.org/node/1083)"
 ---
 code: |
   MLH_time_min = 20
@@ -962,12 +962,12 @@ objects:
 ---
 objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
+# ---
+# objects:
+#   - al_cover_bundle: ALDocumentBundle.using(elements=[instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
 ---
 objects:
-  - al_cover_bundle: ALDocumentBundle.using(elements=[instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
----
-objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[al_cover_bundle, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[cover_sheet_template_2, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
 ---
 code: |
