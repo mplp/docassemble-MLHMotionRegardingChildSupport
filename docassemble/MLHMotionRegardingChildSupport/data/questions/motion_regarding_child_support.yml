@@ -953,7 +953,7 @@ include:
 ##### Documents 
 #######################################################
 objects:
-  - instructions: ALDocument.using(title="Instructions", filename="Instructions", enabled=True, has_addendum=False)
+  - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
   - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", has_addendum=False)
@@ -967,7 +967,7 @@ objects:
 #   - al_cover_bundle: ALDocumentBundle.using(elements=[instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[cover_sheet_template_2, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
 ---
 code: |
