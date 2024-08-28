@@ -60,7 +60,9 @@ review:
       - recompute:
         - plaintiffs
         - defendants
+        - who_pays_new
         - which_side_paid
+        - which_side_pays_new
     button: |
       **What party are you in your existing case?**
 
@@ -154,10 +156,10 @@ review:
   - raw html: |
       ${ next_accordion('<h2 class="h5">Support Requested Information</h2>') }
     show if: who_pays_new
-  - label: Edit
-    fields:
+  - Edit: 
       - who_pays_new
-      - which_side_pays_new
+      - recompute:
+        - which_side_pays_new
     button: |
       % if agreed_on_who_pays:
       **In your agreement with ${ other_parties }, who are you asking the court to pay support?**

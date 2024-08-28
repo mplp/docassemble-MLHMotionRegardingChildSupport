@@ -185,8 +185,10 @@ code: |
     signature_date
   MLH_outro_saving_answers
   
+  # load value of these so that they populate forms as expected
   plaintiffs
   defendants
+  which_side_pays_new
     
   interview_motion_regarding_child_support = True
 ---
@@ -242,9 +244,9 @@ subquestion: |
   * Filed a Michigan divorce, custody, or child support case, and want to ask the court for a {temporary child support order}; **OR**
   * Have a Michigan Judgment of Divorce or final order in a custody or paternity case that does not include child support, and want to ask the court to order child support in that case now.
 
-  To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
+  To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/changing-child-support-order).
 
-  If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-or-changing-child-support-order).
+  If you need to get a child support order, but your situation is not described above, read [Getting a Child Support Order](https://michiganlegalhelp.org/resources/family/getting-child-support-order).
 continue button field: substantive_intro
 terms:
   temporary child support order: |
@@ -334,7 +336,7 @@ content: |
   Here is an example of where you can find this information on your court papers.
 
   * The court information is circled in blue, on the top left.
-  * The case number is circled in yellow, on the top right.
+  * The case number has a yellow rectangle around it, on the top right.
   * The information about the parties is circled in red
 
   ${ image_court_papers.show(width="100%") }
@@ -355,7 +357,7 @@ id: docket number
 question: |
   What is your case number?
 subquestion: |
-  Enter the case number from your divorce case, custody case, or other family support case.
+  Enter the case number from your divorce case, custody case, or other family court case.
 
   ${ collapse_template(where_case_number) }
 fields:
@@ -393,12 +395,12 @@ code: |
 ---
 id: is_parent
 question: |
-  Are you the parent of the child or children this Motion Regarding Support is for?
+  Are you a parent of the child or children this Motion Regarding Support is for?
 fields:
   - no label: is_parent
     datatype: radio 
     choices:
-      - Yes, I am the parent: True
+      - Yes, I am a parent: True
       - No, I am not the parent: False
 ---
 id: third_party_named
@@ -583,7 +585,7 @@ template: where_subtotal_amount
 subject: |
   Where do I find the Subtotal amount?
 content: |
-  You can find the subtotal amount on the second page of the Uniform Child Support Order, highlighted in yellow below.
+  You can find the subtotal amount on the second page of your Uniform Child Support Order. See the example highlighted in yellow below.
 
   If there are multiple children, choose the subtotal amount in the column that matches the number of children who are still covered by the order.
   Usually the child support obligation for each child ends on the last day of the month they turn 18. But in some cases, child support may continue up to age 19 and a half.
@@ -628,7 +630,7 @@ id: child support formula FYI
 question: |
   Child Support Formula
 subquestion: |
-  **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support base on the Michigan Child
+  **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support based on the Michigan Child
   Support Formula**. You will see the child support numbers at the end of the calculation on the results page.
 
   If you are asking for the Support Formula amounts in your motion, you will need the Calculator results page to answer the questions
@@ -647,9 +649,9 @@ content: |
 id: who pays new
 question: |
   % if agreed_on_who_pays:
-  In your agreement with ${ other_parties }, who are you asking the court to pay support?
+  According to your agreement with ${ other_parties }, who should be ordered to pay support?
   % else:
-  Who are you asking the court to pay support?
+  Who should be ordered to pay support?
   % endif
 fields:
   - no label: who_pays_new
@@ -678,7 +680,7 @@ fields:
     choices:
       - The support amounts were calculated using the MiChildSupport Calculator: used_mi_calc
       - The support amounts are different from the MiChildSupport Calculator amounts: different_from_mi_calc
-      - I was unable to use the MiChildSupportCalculator: unable_to_use_mi_calc
+      - I was unable to use the MiChildSupport Calculator: unable_to_use_mi_calc
 ---
 # TODO(brycew): helps hides again when you try to type in the answer; how bad of a UX is that?
 id: base support new question
@@ -734,22 +736,18 @@ objects:
 ---
 id: asking for payer benefits credit
 question: |
-  % if agreed_on_who_pays:
-  In the agreement, are
-  % else:
-  Are
-  % endif
-  you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?
+  ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }
 subquestion: |
-  If the payer of child support receives retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
-  Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
-  The court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent
-  benefits should be subtracted from the support amount.
+  If the payer of child support gets retirement, survivor’s, or disability benefits from a government insurance program like Social Security, Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
+
+  In that case, the court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent benefits should be subtracted from the support amount.
 fields:
-  - Are you asking for the court to give ${ "you" if who_pays_new == "user" else other_parties[0] } a credit?: asking_for_payer_benefits_credit
-    label above field: True
-    datatype: yesnoradio
-  - What type of dependent benefit does your ${ "children" if len(children) > 1 else "child" } receive?: child_benefit_type
+  - no label: asking_for_payer_benefits_credit
+    datatype: radio
+    choices:
+      - Yes, my ${ "children get" if len(children) > 1 else "child gets" } dependent benefits based on ${ "my work record." if who_pays_new == "user" else other_parties[0].possessive('work record.') }: True
+      - No, my ${ "children do NOT" if len(children) > 1 else "child does NOT" } get dependent benefits based on ${ "my work record." if who_pays_new == "user" else other_parties[0].possessive('work record.') }: False
+  - What type of dependent benefit ${ "do your children" if len(children) > 1 else "does your child" } receive?: child_benefit_type
     label above field: True
     datatype: radio
     code: |
@@ -810,7 +808,7 @@ fields:
 ---
 id: circumstance_changes
 question: |
-  How have your circumstances changed?
+  How have circumstances changed?
 subquestion: |
   Explain in detail, and use complete sentences.
   
@@ -819,7 +817,7 @@ subquestion: |
   
   ${ collapse_template(circumstance_examples) }
 fields:
-  - How have your circumstances changed?: circumstance_changes
+  - How have circumstances changed?: circumstance_changes
     input type: area
     label above field: True
 ---
@@ -1059,7 +1057,14 @@ attachment:
     - other_parties: ${ other_parties if agreed_on_who_pays and not base_support_matches_calc == "unable_to_use_mi_calc" else "" }
     - is_new_agreement: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
     - is_new_agreement__2: ${ agreed_on_who_pays if not base_support_matches_calc == "unable_to_use_mi_calc" else False }
-    - order_request: ${ "I ask the court to enter a referral order to the Friend of the Court for a support investigation." if base_support_matches_calc == "unable_to_use_mi_calc" else "" } 
+    - order_request: |
+          % if base_support_matches_calc == "unable_to_use_mi_calc":
+          ${"I ask the court to enter a referral order to the Friend of the Court for a support investigation."} 
+          % elif not agreed_on_who_pays:
+          ${"  See attached."} 
+          % else: 
+          ${""} 
+          % endif
     - signature_date: ${ signature_date if MLH_esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
     #- judge_name: ${ judge.name if has_hearing_info else "" }
