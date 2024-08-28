@@ -173,13 +173,6 @@ code: |
     
 
   nav.set_section("signpost_download")
-  # TODO(#7): do we need hearing info?
-  #if has_hearing_info:
-  #  hearing_at_court
-  #  hearing_time
-  #  judge.name
-  #  judge_bar_number
-  
   MLH_outro_filing_information
   if MLH_esign:
     signature_date
@@ -194,15 +187,9 @@ code: |
 ---
 mandatory: True
 code: |
+  snapshot_start
   interview_motion_regarding_child_support
-  # Store anonymous data for analytics / statistics
-  store_variables_snapshot(
-      persistent=True,
-      data={
-          "zip": showifdef("users[0].address.zip"),
-          "reached_interview_end": True,
-      },
-  )
+  snapshot_download
   motion_child_support_download
 ---
 code: |
@@ -253,8 +240,6 @@ terms:
     You may want to ask for a temporary child support order if it will be a while before your case is finished and you need child support before then. 
     
     A temporary order is in effect while the case is pending. A final child support order will replace the temporary order when you finish your court case.
-comment: |
-  TODO: add direct links to Changing a Child Support Order and Getting a Child Support Order
 ---
 id: more help intro
 question: |
@@ -846,65 +831,6 @@ subquestion: |
   ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
 progress: 100
 ---
-id: Do you know hearing time and place
-question: |
-  Motion Hearing Information
-subquestion: |
-  Have you already contacted the court to find out:
-  
-  * when the hearing will be
-  * where the hearing will be, and
-  * what judge will run the hearing?
-under: |  
- **For most people, the answer will be no.**  
- 
- Most people will get the judge and hearing information **after** they file this motion with the court.  We will give you more instructions when you finish this tool.
-fields:
-  - no label: has_hearing_info
-    datatype: yesnoradio
----
-if: has_hearing_info
-id: When will the hearing be
-question: |
-  When will the hearing be?
-fields:
-  - "Date of hearing": hearing_date
-    datatype: date
-    required: False
-    min: ${ today() }
-  - "Hearing Time": hearing_time
-    maxlength: 13
-    required: False
-    #removed "time" datatype due to failure on some older Androids and weird interface.
----
-if: has_hearing_info
-id: Will the hearing be held at the courthouse
-question: |
-  Where will the hearing be?
-fields:
-  - "Will the hearing be in person at the courthouse?": hearing_at_court
-    datatype: yesnoradio
-    required: False
-  - "* Type the address if it will be at a physical location. * If the hearing will be online or by phone, briefly explain.": hearing_address_on_one_line
-    show if:
-      variable: hearing_at_court 
-      is: False
-    maxlength: 50 
----
-if: has_hearing_info
-id: Judge information
-question: |
-  What judge will hear your motion?
-subquestion: |
-  What is the name and bar number (or "P-Number") of the judge who will hear this motion?
-fields:
-  - "Judge's name": judge.name
-    maxlength: 35
-    required: False
-  - "Judge's bar number": judge_bar_number
-    maxlength: 7
-    required: False
----
 ############
 ## Overridden questions from AL
 ############
@@ -1067,11 +993,6 @@ attachment:
           % endif
     - signature_date: ${ signature_date if MLH_esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
-    #- judge_name: ${ judge.name if has_hearing_info else "" }
-    #- judge_bar_number: ${ judge_bar_number if has_hearing_info else "" }
-    #- hearing_date: ${ format_date(hearing_date) if has_hearing_info else "" }
-    #- hearing_time: ${ hearing_time if has_hearing_info else "" }
-    #- hearing_address_on_one_line: ${ hearing_address_on_one_line if has_hearing_info else "" }
     - service_signature_date: 
     - service_signature:
     # Unused button : ___instructions_link____
@@ -1080,7 +1001,7 @@ attachment:
   name: Uniform Child Support Order
   variable name: mrcs_foc10[i]
   skip undefined: True
-  editable: True
+  editable: False
   pdf template file: Uniform Child Support Order - FOC 10.pdf
   fields:
     - trial_court_circuit: |
@@ -1116,7 +1037,7 @@ attachment:
   name: Uniform Child Support Order Deviation Addendum
   variable name: mrcs_foc10d[i]
   skip undefined: True
-  editable: True
+  editable: False
   pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
   fields:
     - trial_court_circuit: |
@@ -1145,7 +1066,7 @@ attachment:
   name: Referral Order
   variable name: mrcs_foc12[i]
   skip undefined: True
-  editable: True
+  editable: False
   pdf template file: ReferralOrder-FOC12.pdf
   fields:
     - trial_court_circuit: |
