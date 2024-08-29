@@ -957,7 +957,9 @@ code: |
   # TODO(brycew): we don't really need to treat the addendum like an addendum?
   # `circumstance_changes` go in it, but also structured info about other payments.
   # Should just be a DOCX template, wrapped with a bundle for the mrcs_attachment.
-  # mrcs_attachment.overflow_fields.gathered = True
+  mrcs_attachment.overflow_fields.gathered = True
+  mrcs_foc10.overflow_fields.gathered = True
+  mrcs_foc10d.overflow_fields.gathered = True
 ---
 attachment:
   name: instructions  
