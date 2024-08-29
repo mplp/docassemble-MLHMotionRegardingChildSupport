@@ -879,9 +879,9 @@ objects:
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
   - mrcs_foc10_main: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - mrcs_foc10_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order")
+  - mrcs_foc10_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order", filename="Addendum to Uniform Child Support Order.docx")
   - mrcs_foc10d_main: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
-  - mrcs_foc10d_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order Deviation Addendum")
+  - mrcs_foc10d_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order Deviation Addendum", filename="Addendum to Uniform Child Support Order Deviation Addendum.docx")
   - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral Order - FOC 12.pdf", has_addendum=False)
 ---
 objects:
