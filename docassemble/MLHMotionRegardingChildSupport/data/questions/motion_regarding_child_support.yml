@@ -904,6 +904,7 @@ code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
     mrcs_foc10.enabled = False
     mrcs_foc10_main.enabled = False
+    mrcs_foc10_addendum.enabled = False
   else:
     mrcs_foc10.enabled = True
     mrcs_foc10_main.enabled = True
@@ -929,6 +930,7 @@ code: |
   else:
     mrcs_foc10d.enabled = False
     mrcs_foc10d_main.enabled = False
+    mrcs_foc10d_addendum.enabled = False
 ---
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
