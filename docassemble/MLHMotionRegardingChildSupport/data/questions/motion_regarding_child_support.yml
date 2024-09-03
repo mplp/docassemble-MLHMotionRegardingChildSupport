@@ -723,9 +723,7 @@ id: asking for payer benefits credit
 question: |
   ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }
 subquestion: |
-  If the payer of child support gets retirement, survivor’s, or disability benefits from a government insurance program like Social Security, Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
-
-  In that case, the court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent benefits should be subtracted from the support amount.
+  ${ collapse_template(learn_more_about_benefits_credit) }
 fields:
   - no label: asking_for_payer_benefits_credit
     datatype: radio
@@ -738,10 +736,39 @@ fields:
     code: |
       benefit_types_ordered
     show if: asking_for_payer_benefits_credit
-  - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: child_benefit_amount
+  - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }: child_benefit_amount
     label above field: True
     datatype: currency
     show if: asking_for_payer_benefits_credit
+---
+template: learn_more_about_benefits_credit
+subject: I want to learn more about this
+content: |
+  % if who_pays_new == "user":
+  If you receive retirement, survivor’s, or disability benefits from a government insurance program such as Social Security, Veteran’s Administration, or Railroad Retirement,
+  % if len(children) == 1:
+  your dependent child may also get benefits based on your work record.
+  
+  If so, the court will count the child’s benefits as a credit towards payment of your child support obligation.
+  % else:
+  your dependent children may also get benefits based on your work record.
+  
+  If so, the court will count the children’s benefits as a credit towards payment of your child support obligation.
+  % endif
+  % else:
+  If ${ other_parties[0].name.familiar() } gets retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
+  Veteran’s Administration, or Railroad Retirement,
+  % if len(children) == 1:
+  ${ other_parties[0].name.familiar() }'s dependent child may also get benefits based on ${ other_parties[0].name.familiar() }'s work record.
+
+  If so, the court will count the child’s benefits as a credit towards payment of ${ other_parties[0].name.familiar() }'s child support obligation.
+  % else:
+  ${ other_parties[0].name.familiar() }'s dependent children may also get benefits based on ${ other_parties[0].name.familiar() }'s work record.
+  
+  If so, the court will count the children’s benefits as a credit towards payment of ${ other_parties[0].name.familiar() }'s child support obligation.
+  % endif
+  % endif
+  In other words, the amount of dependent benefits should be subtracted from the support amount.
 ---
 if: has_existing_support_order
 id: agreement and circumstances change
