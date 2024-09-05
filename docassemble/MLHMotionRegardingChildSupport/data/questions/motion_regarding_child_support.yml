@@ -903,12 +903,10 @@ objects:
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
     mrcs_foc10.enabled = False
-    mrcs_foc10_main.enabled = False
-    mrcs_foc10_addendum.enabled = False
   else:
     mrcs_foc10.enabled = True
     mrcs_foc10_main.enabled = True
-    if len(children) > 6:
+    if len(children) > 7:
       mrcs_foc10_addendum.enabled = True
     else:
       mrcs_foc10_addendum.enabled = False
@@ -923,14 +921,12 @@ code: |
   if base_support_matches_calc == "different_from_mi_calc":
     mrcs_foc10d.enabled = True
     mrcs_foc10d_main.enabled = True
-    if len(children) > 6:
+    if len(children) > 7:
       mrcs_foc10d_addendum.enabled = True
     else:
       mrcs_foc10d_addendum.enabled = False
   else:
     mrcs_foc10d.enabled = False
-    mrcs_foc10d_main.enabled = False
-    mrcs_foc10d_addendum.enabled = False
 ---
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc":
@@ -952,14 +948,13 @@ attachment:
   variable name: mrcs_foc10d_addendum[i]
   docx template file: FOC_10d_Addendum.docx
   skip undefined: True
----
-code: |
+# ---
+# code: |
   # TODO(brycew): we don't really need to treat the addendum like an addendum?
   # `circumstance_changes` go in it, but also structured info about other payments.
   # Should just be a DOCX template, wrapped with a bundle for the mrcs_attachment.
-  mrcs_attachment.overflow_fields.gathered = True
-  mrcs_foc10.overflow_fields.gathered = True
-  mrcs_foc10d.overflow_fields.gathered = True
+  # (EKM): per Bryce's comment and testing, looks like the below is not needed.
+  # mrcs_attachment.overflow_fields.gathered = True
 ---
 attachment:
   name: instructions  
@@ -1036,7 +1031,7 @@ attachment:
   variable name: mrcs_foc10_main[i]
   skip undefined: True
   editable: False
-  pdf template file: Uniform Child Support Order - FOC 10.pdf
+  pdf template file: Uniform_Child_Support_Order_-_FOC_10.pdf
   fields:
     - trial_court_circuit: |
           % if the_court.type == 'circuit':
@@ -1065,14 +1060,14 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    # TODO(brycew): continue here
+    - more_children: ${ "See Addendum" if len(children) > 7 else "" }
 ---
 attachment:
   name: Uniform Child Support Order Deviation Addendum
   variable name: mrcs_foc10d_main[i]
   skip undefined: True
   editable: False
-  pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
+  pdf template file: Uniform_Child_Support_Order_Deviation_Addendum_-_FOC_10d.pdf
   fields:
     - trial_court_circuit: |
           % if the_court.type == 'circuit':
@@ -1094,7 +1089,7 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    # TODO(brycew): continue here
+    - more_children: ${ "See Addendum" if len(children) > 7 else "" }
 ---
 attachment:
   name: Referral Order
