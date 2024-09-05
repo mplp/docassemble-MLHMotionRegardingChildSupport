@@ -107,13 +107,11 @@ code: |
 ---
 sections:
   - signpost_intro: "Introduction"
-  - signpost_prior_case: "Prior Case Information"
-  - signpost_your_info: "Your Information"
-  - signpost_other_info: "Other Parent's Information"
+  - signpost_prior_case: "Case Information"
+  - signpost_your_info: "Parent Information"
   - signpost_children_info: "Children Information"
-  - signpost_prior_order: "Prior Order Information"
-  - signpost_agreement: "Agreement Information"
-  - signpost_support_requested: "Support Requested Information"
+  - signpost_prior_order: "Prior Order"
+  - signpost_support_requested: "Support Requested"
   - signpost_download: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
@@ -155,15 +153,12 @@ code: |
   public_record_fyi
 
   users.gather()
-  nav.set_section("signpost_other_info")
   other_parties.gather()
   nav.set_section("signpost_children_info")
   children.gather()
 
   nav.set_section("signpost_prior_order")
   set_all_existing_support
-
-  nav.set_section("signpost_agreement")
 
   nav.set_section("signpost_support_requested")
   support_formula_fyi
