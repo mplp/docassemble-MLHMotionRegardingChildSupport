@@ -905,12 +905,20 @@ objects:
   - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
-  - mrcs_foc10: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", has_addendum=False)
-  - mrcs_foc10d: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", has_addendum=False)
+  - mrcs_foc10_main: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - mrcs_foc10_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order", filename="Addendum to Uniform Child Support Order.docx")
+  - mrcs_foc10d_main: ALDocument.using(title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf", default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - mrcs_foc10d_addendum: ALDocument.using(title="Addendum to Uniform Child Support Order Deviation Addendum", filename="Addendum to Uniform Child Support Order Deviation Addendum.docx")
   - mrcs_foc12: ALDocument.using(title="Referral Order", filename="Referral Order - FOC 12.pdf", has_addendum=False)
 ---
 objects:
   - mrcs_attachment: ALDocumentBundle.using(elements=[mrcs_attachment_main, mrcs_attachment_addendum], filename="Motion RegardingSupport - FOC 50.pdf", title="Motion Regarding Support", enabled=True)
+---
+objects:
+  - mrcs_foc10: ALDocumentBundle.using(elements=[mrcs_foc10_main, mrcs_foc10_addendum], title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf")
+---
+objects:
+  - mrcs_foc10d: ALDocumentBundle.using(elements=[mrcs_foc10d_main, mrcs_foc10d_addendum], title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf")
 ---
 objects:
   - al_user_bundle: ALDocumentBundle.using(elements=[instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
@@ -921,6 +929,11 @@ code: |
     mrcs_foc10.enabled = False
   else:
     mrcs_foc10.enabled = True
+    mrcs_foc10_main.enabled = True
+    if len(children) > 7:
+      mrcs_foc10_addendum.enabled = True
+    else:
+      mrcs_foc10_addendum.enabled = False
 ---
 code: |
   if base_support_matches_calc == "unable_to_use_mi_calc" and (agreed_on_who_pays or not has_existing_support_order):
@@ -931,6 +944,11 @@ code: |
 code: |
   if base_support_matches_calc == "different_from_mi_calc":
     mrcs_foc10d.enabled = True
+    mrcs_foc10d_main.enabled = True
+    if len(children) > 7:
+      mrcs_foc10d_addendum.enabled = True
+    else:
+      mrcs_foc10d_addendum.enabled = False
   else:
     mrcs_foc10d.enabled = False
 ---
@@ -945,11 +963,22 @@ attachment:
   docx template file: Motion_Regarding_Support_Addendum.docx
   skip undefined: True
 ---
-code: |
+attachment:
+  variable name: mrcs_foc10_addendum[i]
+  docx template file: FOC_10_Addendum.docx
+  skip undefined: True
+---
+attachment:
+  variable name: mrcs_foc10d_addendum[i]
+  docx template file: FOC_10d_Addendum.docx
+  skip undefined: True
+# ---
+# code: |
   # TODO(brycew): we don't really need to treat the addendum like an addendum?
   # `circumstance_changes` go in it, but also structured info about other payments.
   # Should just be a DOCX template, wrapped with a bundle for the mrcs_attachment.
-  mrcs_attachment.overflow_fields.gathered = True
+  # (EKM): per Bryce's comment and testing, looks like the below is not needed.
+  # mrcs_attachment.overflow_fields.gathered = True
 ---
 attachment:
   name: instructions  
@@ -1023,10 +1052,10 @@ attachment:
 ---
 attachment:
   name: Uniform Child Support Order
-  variable name: mrcs_foc10[i]
+  variable name: mrcs_foc10_main[i]
   skip undefined: True
   editable: False
-  pdf template file: Uniform Child Support Order - FOC 10.pdf
+  pdf template file: Uniform_Child_Support_Order_-_FOC_10.pdf
   fields:
     - trial_court_circuit: |
           % if the_court.type == 'circuit':
@@ -1055,14 +1084,14 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    # TODO(brycew): continue here
+    - more_children: ${ "See Addendum" if len(children) > 7 else "" }
 ---
 attachment:
   name: Uniform Child Support Order Deviation Addendum
-  variable name: mrcs_foc10d[i]
+  variable name: mrcs_foc10d_main[i]
   skip undefined: True
   editable: False
-  pdf template file: Uniform Child Support Order Deviation Addendum - FOC 10d.pdf
+  pdf template file: Uniform_Child_Support_Order_Deviation_Addendum_-_FOC_10d.pdf
   fields:
     - trial_court_circuit: |
           % if the_court.type == 'circuit':
@@ -1084,7 +1113,7 @@ attachment:
     - children5: ${ children[4] if len(children) > 4 else "" }
     - children6: ${ children[5] if len(children) > 5 else "" }
     - children7: ${ children[6] if len(children) > 6 else "" }
-    # TODO(brycew): continue here
+    - more_children: ${ "See Addendum" if len(children) > 7 else "" }
 ---
 attachment:
   name: Referral Order
