@@ -29,8 +29,8 @@ code: |
   al_form_type = "existing_case"
 ---
 code: |
-  accessible_instructions_link = "[https://michiganlegalhelp.org/step/2437](https://michiganlegalhelp.org/step/2437)"
-  resource_page_link = "[https://michiganlegalhelp.org/node/1083](https://michiganlegalhelp.org/node/1083)"
+  resource_page_url_only = "https://michiganlegalhelp.org/node/1083"
+  resource_page_name = "Filing to Change or Get a Child Support Order"
 ---
 code: |
   MLH_time_min = 20
@@ -723,9 +723,7 @@ id: asking for payer benefits credit
 question: |
   ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }
 subquestion: |
-  If the payer of child support gets retirement, survivor’s, or disability benefits from a government insurance program like Social Security, Veteran’s Administration, or Railroad Retirement, the payer's dependent children may also get benefits based on the payer’s work record.
-
-  In that case, the court will credit these dependent benefits towards payment of child support. In other words, the amount of dependent benefits should be subtracted from the support amount.
+  ${ collapse_template(learn_more_about_benefits_credit) }
 fields:
   - no label: asking_for_payer_benefits_credit
     datatype: radio
@@ -738,10 +736,39 @@ fields:
     code: |
       benefit_types_ordered
     show if: asking_for_payer_benefits_credit
-  - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on your work record?: child_benefit_amount
+  - How much is the monthly dependent benefit that the ${ "children get" if len(children) > 1 else "child gets" } from the government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }: child_benefit_amount
     label above field: True
     datatype: currency
     show if: asking_for_payer_benefits_credit
+---
+template: learn_more_about_benefits_credit
+subject: I want to learn more about this
+content: |
+  % if who_pays_new == "user":
+  If you receive retirement, survivor’s, or disability benefits from a government insurance program such as Social Security, Veteran’s Administration, or Railroad Retirement,
+  % if len(children) == 1:
+  your dependent child may also get benefits based on your work record.
+  
+  If so, the court will count the child’s benefits as a credit towards payment of your child support obligation.
+  % else:
+  your dependent children may also get benefits based on your work record.
+  
+  If so, the court will count the children’s benefits as a credit towards payment of your child support obligation.
+  % endif
+  % else:
+  If ${ other_parties[0].name.familiar() } gets retirement, survivor’s, or disability benefits from a government insurance program such as Social Security,
+  Veteran’s Administration, or Railroad Retirement,
+  % if len(children) == 1:
+  ${ other_parties[0].name.familiar() }'s dependent child may also get benefits based on ${ other_parties[0].name.familiar() }'s work record.
+
+  If so, the court will count the child’s benefits as a credit towards payment of ${ other_parties[0].name.familiar() }'s child support obligation.
+  % else:
+  ${ other_parties[0].name.familiar() }'s dependent children may also get benefits based on ${ other_parties[0].name.familiar() }'s work record.
+  
+  If so, the court will count the children’s benefits as a credit towards payment of ${ other_parties[0].name.familiar() }'s child support obligation.
+  % endif
+  % endif
+  In other words, the amount of dependent benefits should be subtracted from the support amount.
 ---
 if: has_existing_support_order
 id: agreement and circumstances change
@@ -875,7 +902,7 @@ include:
 ##### Documents 
 #######################################################
 objects:
-  - instructions: ALDocument.using(title="Instructions", filename="Instructions", enabled=True, has_addendum=False)
+  - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
   - mrcs_attachment_main: ALDocument.using(title="Motion Regarding Support", filename="Motion Regarding Support - FOC 50.pdf", enabled=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - mrcs_attachment_addendum: ALDocument.using(title="Motion Regarding Support Addendum", filename="Motion Regarding Support Addendum.docx")
   - mrcs_foc10_main: ALDocument.using(title="Uniform Child Support Order", filename="Uniform Child Support Order - FOC 10.pdf", default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
@@ -894,10 +921,7 @@ objects:
   - mrcs_foc10d: ALDocumentBundle.using(elements=[mrcs_foc10d_main, mrcs_foc10d_addendum], title="Uniform Child Support Order Deviation Addendum", filename="Uniform Child Support Order Deviation Addendum - FOC 10d.pdf")
 ---
 objects:
-  - al_cover_bundle: ALDocumentBundle.using(elements=[cover_sheet_template, instructions], filename="Instructions - Do not file this", title="Instructions", enabled=True)
----
-objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[al_cover_bundle, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[mrcs_attachment, mrcs_foc10, mrcs_foc10d, mrcs_foc12], filename="Motion Regarding Child Support (All Forms).pdf", title="All forms to download for your records", enabled=True)
 ---
 code: |
