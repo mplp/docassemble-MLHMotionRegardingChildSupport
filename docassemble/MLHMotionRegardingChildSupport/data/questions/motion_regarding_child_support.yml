@@ -223,7 +223,7 @@ subquestion: |
   This tool is only for parents who:
 
   * Have a child support order in a Michigan court case and want to file a motion to change the amount of child support; **OR**
-  * Filed a Michigan divorce, custody, or child support case, and want to ask the court for a {temporary child support order}; **OR**
+  * Filed a Michigan family court case such as divorce or custody, and want to ask the court for a {temporary child support order}; **OR**
   * Have a Michigan Judgment of Divorce or final order in a custody or paternity case that does not include child support, and want to ask the court to order child support in that case now.
 
   To learn about changing child support without filing a motion (such as asking for a Friend of the Court support review), read [Changing a Child Support Order](https://michiganlegalhelp.org/resources/family/changing-child-support-order).
@@ -294,7 +294,7 @@ id: has_existing_case
 question: |
   Do you have an existing Michigan family court case?
 subquestion: |
-  If you do not already have an existing Michigan divorce, separate maintenance, paternity, custody, or family support case, return to [Michigan Legal Help](https://michiganlegalhelp.org/) for more information.
+  If you do not already have an existing Michigan divorce, separate maintenance, paternity, custody, or child support case, return to [Michigan Legal Help](https://michiganlegalhelp.org/) for more information.
 fields:
   - Do you have an existing Michigan family court case?: has_existing_case
     datatype: yesnoradio
@@ -381,7 +381,7 @@ fields:
     datatype: radio 
     choices:
       - Yes, I am a parent: True
-      - No, I am not the parent: False
+      - No, I am not a parent: False
 ---
 id: third_party_named
 question: |
@@ -445,16 +445,13 @@ continue button field: public_record_fyi
 ---
 template: confidential_how_to
 subject: |
-  What if I'm afraid for my safety if this information is discovered by the other party or someone else
+  What if I'm afraid for my safety if this information is discovered by the other party or someone else?
 content: |
-  To keep your address confidential, you need to have one of the following:
+  You can **use an alternate address** on your court forms if you worry for your safety. For example, you can use the address of a friend or family member if they have agreed to let you do this and you are able to get your mail from them. This is important so you can receive copies of everything filed in your case and notices from the court.
 
-  * A Personal Protection Order or other order which keeps your address confidential, OR
-  * On a [Uniform Child Custody Jurisdiction Enforcement Act Affidavit form](https://courts.michigan.gov/Administration/SCAO/Forms/courtforms/mc416.pdf),
-    you need to state that you and/or your children’s safety would be at risk if you disclose your address.
-
-  In either one of these scenarios, you can use a confidential address and phone number (such as the address and phone number
-  of a friend or relative who has given their permission, or a Post Office Box) instead of your residential address and personal phone number.
+  **Even if you use a "safe address" on your court forms, it is best to also file a statement asking the Friend of the Court (FOC) to keep your real address confidential.** This is to prevent the FOC from disclosing your address to the other side. There is no statewide form for this. 
+  
+  If your case is in Wayne County, you can use this [Wayne County Request for Confidential Address form](https://www.3rdcc.org/Documents/FamilyDomestic/FOC/Miscellaneous/FD-FOC%204061%20Req%20for%20Confidential%20Address-Notice%20to%20FOC%20Alt%20Address%5E%5E%5E.pdf). If your case is in another county, you cannot file the Wayne County form, but you can use it as a template to create your own statement. Or you can contact the Friend of the Court in your county and ask if they have a local form you can use.
 ---
 # Overriding from AL to specify that they need to receive mail
 id: your address
