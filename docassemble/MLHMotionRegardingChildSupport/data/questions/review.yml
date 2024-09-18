@@ -81,7 +81,7 @@ review:
       % endfor
   - raw html: |
       ${ next_accordion('<h2 class="h5">Children Information</h2>') }
-    show if: current_child_support_signpost
+    show if: children_review_header
   - Edit: children.revisit
     button: |-
       **Children**
@@ -156,6 +156,7 @@ review:
       - who_pays_new
       - recompute:
         - which_side_pays_new
+        - asking_for_payer_benefits_credit
     button: |
       % if agreed_on_who_pays:
       **In your agreement with ${ other_parties }, who are you asking the court to pay support?**
@@ -218,11 +219,7 @@ review:
   - Edit: |-
       asking_for_payer_benefits_credit
     button: |
-      % if agreed_on_who_pays:
-      **In the agreement, are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
-      % else:
-      **Are you asking the court to give the payer of child support a credit each month for dependent benefits received from a government insurance program?**
-      % endif
+      **${ "Do the children " if len(children) > 1 else "Does the child " } get dependent benefits from a government insurance program based on the payer's income?**
 
       ${ word(yesno(asking_for_payer_benefits_credit)) }
 
