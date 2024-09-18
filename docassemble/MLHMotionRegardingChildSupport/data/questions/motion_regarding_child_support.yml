@@ -23,7 +23,7 @@ code: |
   interview_short_title = "Motion Regarding Child Support"
 ---
 code: |
-  github_repo_name = "docassemble-MLHMotionRegardingChildSupport"
+  github_repo_name = "docassemble-MLHMotionRegardingChildSupport" if get_config('debug') else "docassemble-UserFeedback"
 ---
 code: |
   al_form_type = "existing_case"
@@ -186,7 +186,7 @@ code: |
   snapshot_start
   interview_motion_regarding_child_support
   snapshot_download
-  motion_child_support_download
+  MLH_download
 ---
 code: |
   if has_existing_support_order:
@@ -444,18 +444,8 @@ subquestion: |
 
   Keep in mind that your case file is a public record and anyone could ask to look at it and see your address and phone number.
 
-  ${ collapse_template(confidential_how_to)}
+  ${ collapse_template(confidential_address_family)}
 continue button field: public_record_fyi
----
-template: confidential_how_to
-subject: |
-  What if I'm afraid for my safety if this information is discovered by the other party or someone else?
-content: |
-  You can **use an alternate address** on your court forms if you worry for your safety. For example, you can use the address of a friend or family member if they have agreed to let you do this and you are able to get your mail from them. This is important so you can receive copies of everything filed in your case and notices from the court.
-
-  **Even if you use a "safe address" on your court forms, it is best to also file a statement asking the Friend of the Court (FOC) to keep your real address confidential.** This is to prevent the FOC from disclosing your address to the other side. There is no statewide form for this. 
-  
-  If your case is in Wayne County, you can use this [Wayne County Request for Confidential Address form](https://www.3rdcc.org/Documents/FamilyDomestic/FOC/Miscellaneous/FD-FOC%204061%20Req%20for%20Confidential%20Address-Notice%20to%20FOC%20Alt%20Address%5E%5E%5E.pdf). If your case is in another county, you cannot file the Wayne County form, but you can use it as a template to create your own statement. Or you can contact the Friend of the Court in your county and ask if they have a local form you can use.
 ---
 # Overriding from AL to specify that they need to receive mail
 id: your address
@@ -837,22 +827,6 @@ content: |
   * A parent's income has changed;
   * A parent's ability to earn money has changed; or
   * There has been a change in health care coverage.
----
-id: download child support motion DownloadScreen
-event: motion_child_support_download
-question: |
-  All done
-subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
-  
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
-
-  ${ action_button_html(url_action('review_full'), label='Edit answers', color='info') }
-  
-  ${ al_user_bundle.download_list_html() }
-
-  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
-progress: 100
 ---
 ############
 ## Overridden questions from AL
