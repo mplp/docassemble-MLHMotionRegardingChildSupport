@@ -81,7 +81,7 @@ review:
       % endfor
   - raw html: |
       ${ next_accordion('<h2 class="h5">Children Information</h2>') }
-    show if: current_child_support_signpost
+    show if: children_review_header
   - Edit: children.revisit
     button: |-
       **Children**

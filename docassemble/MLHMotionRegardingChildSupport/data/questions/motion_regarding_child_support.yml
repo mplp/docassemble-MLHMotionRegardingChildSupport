@@ -156,6 +156,7 @@ code: |
   other_parties.gather()
   nav.set_section("signpost_children_info")
   children.gather()
+  children_review_header
 
   nav.set_section("signpost_prior_order")
   set_all_existing_support
@@ -207,6 +208,9 @@ code: |
     is_additional_amount_new
     asking_for_payer_benefits_credit
   new_support_info = True
+---
+code: |
+  children_review_header = True
 ---
 code: | 
   if has_existing_support_order and not agreed_on_who_pays:
