@@ -33,6 +33,16 @@ code: |
   resource_page_name = "Filing to Change or Get a Child Support Order"
 ---
 code: |
+  survey_link_url_only = "https://www.surveymonkey.com/r/WFWXQQM"
+---
+template: survey_embed_script
+content: |
+  <script>
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdxQH4LNlYkhHZJyOIp4jpoT_2FHnvuH3HITNIAFMK12usZ.js",a.parentNode.insertBefore(c,a));
+    })(window,document,"script","smcx-sdk");
+  </script>
+---
+code: |
   MLH_time_min = 20
   MLH_time_max = 60
   MLH_materials_included = True
