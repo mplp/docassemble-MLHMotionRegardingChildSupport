@@ -1062,9 +1062,7 @@ attachment:
     - children3: ${ children[2] if len(children) > 2 else "" }
     - children4: ${ children[3] if len(children) > 3 else "" }
     - children5: ${ children[4] if len(children) > 4 else "" }
-    - children6: ${ children[5] if len(children) > 5 else "" }
-    - children7: ${ children[6] if len(children) > 6 else "" }
-    - more_children: ${ "See Addendum" if len(children) > 7 else "" }
+    - more_children: ${ "See Addendum" if len(children) > 5 else "" }
 ---
 attachment:
   name: Uniform Child Support Order Deviation Addendum
