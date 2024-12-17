@@ -910,7 +910,7 @@ code: |
   else:
     mrcs_foc10.enabled = True
     mrcs_foc10_main.enabled = True
-    if len(children) > 7:
+    if len(children) > 5:
       mrcs_foc10_addendum.enabled = True
     else:
       mrcs_foc10_addendum.enabled = False
