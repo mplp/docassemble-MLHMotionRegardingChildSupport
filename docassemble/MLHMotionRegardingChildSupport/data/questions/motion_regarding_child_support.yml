@@ -384,8 +384,9 @@ content: |
 
   ${ image_uniform_order_date.show(width="100%") }
 ---
+# for framework court loader logic
 code: |
-  court_index = next(court_list.filter_courts_by_2([county_choice], ['circuit'], column_1='address_county', column_2='type'))[0]
+  filing_court = "circuit_only"
 ---
 id: is_parent
 question: |
