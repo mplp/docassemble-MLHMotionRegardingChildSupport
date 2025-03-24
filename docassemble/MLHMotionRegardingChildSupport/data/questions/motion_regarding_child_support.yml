@@ -387,6 +387,7 @@ content: |
 # for framework court loader logic
 code: |
   filing_court = "circuit_only"
+  ottawa_circuit_location = "West Olive"
 ---
 id: is_parent
 question: |
