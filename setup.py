@@ -1,6 +1,6 @@
 import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from fnmatch import fnmatchcase
 from distutils.util import convert_path
 
@@ -44,16 +44,15 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHMotionRegardingChildSupport',
-      version='1.0.2',
+      version='1.0.3',
       description=('A motion to change or get child support in Michigan'),
-      long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n* Bryce Willey\r\n* Emily Kress Miller\r\n\r\n## Changelog:\r\n* 12/17/24  1.0.2 Update forms\r\n* 9/30/24   1.0.1 add user survey\r\n* 9/18/24   1.0.0 preparing to go live',
+      long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n* Bryce Willey\r\n* Emily Kress Miller\r\n\r\n## Changelog:\r\n* 2/13/25   1.0.3 Behind-the-scenes court logic adjustment\r\n* 12/17/24  1.0.2 Update forms\r\n* 9/30/24   1.0.1 add user survey\r\n* 9/18/24   1.0.0 preparing to go live',
       long_description_content_type='text/markdown',
       author='Bryce Willey',
       author_email='ekressmiller@lsscm.org',
       license='The MIT License (MIT)',
       url='https://michiganlegalhelp.org/resources/family/do-it-yourself-motion-change-or-get-child-support',
-      packages=find_packages(),
-      namespace_packages=['docassemble'],
+      packages=find_namespace_packages(),
       install_requires=[],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MLHMotionRegardingChildSupport/', package='docassemble.MLHMotionRegardingChildSupport'),
