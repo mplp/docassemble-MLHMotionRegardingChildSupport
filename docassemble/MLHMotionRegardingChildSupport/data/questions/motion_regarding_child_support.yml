@@ -31,6 +31,7 @@ code: |
 code: |
   resource_page_url_only = "https://michiganlegalhelp.org/node/1083"
   resource_page_name = "Filing to Change or Get a Child Support Order"
+  cover_sheet_header = "Your child support motion forms are ready. Well done!"
 ---
 code: |
   survey_link_url_only = "https://www.surveymonkey.com/r/WFWXQQM"
