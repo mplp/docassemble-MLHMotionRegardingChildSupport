@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHMotionRegardingChildSupport',
-      version='1.0.4',
+      version='0.0.0',
       description=('A motion to change or get child support in Michigan'),
       long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n* Bryce Willey\r\n* Emily Kress Miller\r\n\r\n## Changelog:\r\n* 5/28/25   1.0.4 Update instructions header styling and language\r\n* 2/13/25   1.0.3 Behind-the-scenes court logic adjustment\r\n* 12/17/24  1.0.2 Update forms\r\n* 9/30/24   1.0.1 add user survey\r\n* 9/18/24   1.0.0 preparing to go live',
       long_description_content_type='text/markdown',
