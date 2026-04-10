@@ -23,9 +23,6 @@ code: |
   interview_short_title = "Motion Regarding Child Support"
 ---
 code: |
-  MLH_case_type_language = "Look for the two-letter case type code at the end of your case number. This could be DM, DC, DS, DP, or a different code."
----
-code: |
   github_repo_name = "docassemble-MLHMotionRegardingChildSupport" if get_config('debug') else "docassemble-UserFeedback"
 ---
 code: |
@@ -182,8 +179,10 @@ code: |
     
 
   nav.set_section("signpost_download")
-  MLH_standard_outro_pages
-  MLH_patience_assembling
+  MLH_outro_filing_information
+  if MLH_esign:
+    signature_date
+  MLH_outro_saving_answers
   
   # load value of these so that they populate forms as expected
   plaintiffs
@@ -273,11 +272,11 @@ question: |
 subquestion: |
   **Important!**
   
-  In general, child support in Michigan must follow the Michigan Child Support Formula. You can calculate child support based on the Formula by using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) on the {MDHHS} website. The Calculator will create a results page with the amounts of child support (base support, ordinary medical, etc.) and other numbers you will need for your motion and order.
+  In general, child support in Michigan must follow the Michigan Child Support Formula. You can calculate child support based on the Formula by using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) on the {MDHHS} website. The Calculator will create a results page with the amounts of child support (base support, ordinary medical, etc.) and other numbers you will need for your motion and order.
 
   **You will likely have a better and faster outcome to your motion if you:**
   
-  * Calculate child support using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) BEFORE you use this tool, AND
+  * Calculate child support using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) BEFORE you use this tool, AND
   * Use the numbers on the Calculator results page to answer the questions in this tool about the support amounts you want, AND
   * Fill out the Uniform Child Support Order you will get at the end of this tool using the Calculator results page. You will see a reminder to fill out the Support Order in the instructions you can download at the end of this tool.
 terms:
@@ -300,7 +299,7 @@ id: intro - if can't calculate support
 question: |
   If you can’t calculate child support
 subquestion: |
-  If you have trouble using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) and you’re not sure what the new support amounts should be, you can answer “I don’t know” to the questions this tool asks you about support numbers. 
+  If you have trouble using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) and you’re not sure what the new support amounts should be, you can answer “I don’t know” to the questions this tool asks you about support numbers. 
   
   If you answer this way, this tool will produce a motion asking the court to refer you to the Friend of the Court for a support investigation, along with a referral order. You will see more information in the instructions you can download at the end of this tool.
 continue button field: cannot_calc_support_intro
@@ -614,7 +613,7 @@ id: child support formula FYI
 question: |
   Child Support Formula
 subquestion: |
-  **If you have not done so already, use the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) now to calculate child support based on the Michigan Child
+  **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support based on the Michigan Child
   Support Formula**. You will see the child support numbers at the end of the calculation on the results page.
 
   If you are asking for the Support Formula amounts in your motion, you will need the Calculator results page to answer the questions
@@ -690,16 +689,15 @@ fields:
       Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 ---
 id: additional amount new question
-question: Other Expenses
+question: |
+  % if agreed_on_who_pays:
+  In the agreement, are
+  % else:
+  Are
+  % endif
+  you asking the court to order an additional amount each month for other expenses?
 fields:
-  - label: |
-      % if agreed_on_who_pays:
-      In the agreement, are you asking the court to order an additional amount each month for other expenses?
-      % else:
-      Are you asking the court to order an additional amount each month for other expenses?
-      % endif
-    field: is_additional_amount_new
-    label above field: True
+  - no label: is_additional_amount_new
     datatype: yesnoradio
   - "Complete the following sentence. 'The reason for the other expenses is as follows:'": additional_amount_reason
     input type: area
@@ -983,7 +981,8 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-    - trial_court_county: |
+    # Actually county
+    - trial_court_district: |
           ${ the_court.address.county }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
@@ -1029,7 +1028,6 @@ attachment:
           % endif
     - signature_date: ${ signature_date if MLH_esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
-    - explain_esign: ${ MLH_esign_tag if MLH_esign else "" }
     - service_signature_date: 
     - service_signature:
     # Unused button : ___instructions_link____

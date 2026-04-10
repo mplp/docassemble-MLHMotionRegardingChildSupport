@@ -65,31 +65,19 @@ review:
       **What party are you in your existing case?**
 
       ${ showifdef('user_ask_role').capitalize() }
-  - Edit:
-      - users[0].name.first
-      - users[0].address.address
-      - users[0].no_phone_number
+  - Edit: users.revisit
     button: |-
       **You**
 
       % for item in users:
-      ${ item }
-      
-      - ${ item.address.on_one_line() }
-      - ${ word("No phone") if item.no_phone_number else phone_number_formatted(item.phone_number) }
+      - ${ item }
       % endfor
-  - Edit: 
-      - other_parties[0].name.first
-      - other_parties[0].address.address
-      - other_parties[0].no_phone_number
+  - Edit: other_parties.revisit
     button: |-
       **The Other parent in your case**
 
       % for item in other_parties:
-      ${ item }
-      
-      - ${ item.address.on_one_line() }
-      - ${ word("No phone") if item.no_phone_number else phone_number_formatted(item.phone_number) }
+      - ${ item }
       % endfor
   - raw html: |
       ${ next_accordion('<h2 class="h5">Children Information</h2>') }
@@ -99,7 +87,7 @@ review:
       **Children**
 
       % for item in children:
-      - ${ item }, Birthdate: ${ item.birthdate }
+      - ${ item }
       % endfor
   - raw html: |
       ${ next_accordion('<h2 class="h5">Prior Order</h2>') }
@@ -246,6 +234,19 @@ review:
       ${ end_accordion() }
     show if: docket_number
 ---
+id: revisit users
+question: Edit your answers about yourself
+subquestion: |
+  ${ users.table }
+continue button field: users.revisit
+---
+id: revisit other_parties
+question: |
+  Edit your answers about the other side in your case
+subquestion: |
+  ${ other_parties.table }
+continue button field: other_parties.revisit
+---
 id: revisit children
 question: |
   Edit your answers about your children
@@ -266,3 +267,18 @@ edit:
   - name.first
   - birthdate
 ---
+generic object: ALPeopleList
+table: x.table
+rows: x
+columns:
+  - Name: |
+      row_item.name if defined('row_item.name.first') else ''
+  - Address: |
+      row_item.address if defined('row_item.address.address') else ''
+  - Phone number: |
+      row_item.phone_number if defined('row_item.no_phone_number') and not row_item.no_phone_number else ''
+edit:
+  - name.first
+  - address.address
+  - no_phone_number
+delete buttons: False
