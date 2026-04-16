@@ -721,11 +721,12 @@ objects:
 ---
 id: asking for payer benefits credit
 question: |
-  ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record?" if who_pays_new == "user" else other_parties[0].possessive('work record?') }
+  Dependent benefits
 subquestion: |
   ${ collapse_template(learn_more_about_benefits_credit) }
 fields:
-  - no label: asking_for_payer_benefits_credit
+  - ${ "Do your children" if len(children) > 1 else "Does your child" } get **dependent benefits** from a government insurance program based on ${ "your work record" if who_pays_new == "user" else other_parties[0].possessive('work record?') }?: asking_for_payer_benefits_credit
+    label above field: True
     datatype: radio
     choices:
       - Yes, my ${ "children get" if len(children) > 1 else "child gets" } dependent benefits based on ${ "my work record." if who_pays_new == "user" else other_parties[0].possessive('work record.') }: True
