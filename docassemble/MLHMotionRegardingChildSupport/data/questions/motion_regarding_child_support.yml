@@ -984,7 +984,7 @@ attachment:
           ${ the_court.number }
           % endif
     - trial_court_county: |
-          ${ the_court.address.county }
+          ${ the_court.address.county.upper()  }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
@@ -1112,7 +1112,7 @@ attachment:
           ${ the_court.number }
           % endif
     - trial_court_county: |
-          ${ the_court.address.county }
+          ${ the_court.address.county.upper()  }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - CASE NO: ${ docket_number }
     - trial_court_phone_number: ${ the_court.phone }
@@ -1125,3 +1125,4 @@ attachment:
           ${ defendants[0].address.on_one_line() }  
           ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
     - investigation_requested: True
+---
