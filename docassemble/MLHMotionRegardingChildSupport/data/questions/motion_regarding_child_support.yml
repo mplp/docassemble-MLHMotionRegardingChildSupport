@@ -23,6 +23,9 @@ code: |
   interview_short_title = "Motion Regarding Child Support"
 ---
 code: |
+  MLH_case_type_language = "Look for the two-letter case type code at the end of your case number. This could be DM, DC, DS, DP, or a different code."
+---
+code: |
   github_repo_name = "docassemble-MLHMotionRegardingChildSupport" if get_config('debug') else "docassemble-UserFeedback"
 ---
 code: |
@@ -39,8 +42,7 @@ code: |
 template: survey_embed_script
 content: |
   <script>
-    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgdxQH4LNlYkhHZJyOIp4jpoT_2FHnvuH3HITNIAFMK12usZ.js",a.parentNode.insertBefore(c,a));
-    })(window,document,"script","smcx-sdk");
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd8qZ8ON_2FyjUqTzYvfSuztE4hyTngEkIeKEiezipnuyLG.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
   </script>
 ---
 code: |
@@ -180,10 +182,8 @@ code: |
     
 
   nav.set_section("signpost_download")
-  MLH_outro_filing_information
-  if MLH_esign:
-    signature_date
-  MLH_outro_saving_answers
+  MLH_standard_outro_pages
+  MLH_patience_assembling
   
   # load value of these so that they populate forms as expected
   plaintiffs
@@ -273,11 +273,11 @@ question: |
 subquestion: |
   **Important!**
   
-  In general, child support in Michigan must follow the Michigan Child Support Formula. You can calculate child support based on the Formula by using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) on the {MDHHS} website. The Calculator will create a results page with the amounts of child support (base support, ordinary medical, etc.) and other numbers you will need for your motion and order.
+  In general, child support in Michigan must follow the Michigan Child Support Formula. You can calculate child support based on the Formula by using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) on the {MDHHS} website. The Calculator will create a results page with the amounts of child support (base support, ordinary medical, etc.) and other numbers you will need for your motion and order.
 
   **You will likely have a better and faster outcome to your motion if you:**
   
-  * Calculate child support using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) BEFORE you use this tool, AND
+  * Calculate child support using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) BEFORE you use this tool, AND
   * Use the numbers on the Calculator results page to answer the questions in this tool about the support amounts you want, AND
   * Fill out the Uniform Child Support Order you will get at the end of this tool using the Calculator results page. You will see a reminder to fill out the Support Order in the instructions you can download at the end of this tool.
 terms:
@@ -300,7 +300,7 @@ id: intro - if can't calculate support
 question: |
   If you can’t calculate child support
 subquestion: |
-  If you have trouble using the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) and you’re not sure what the new support amounts should be, you can answer “I don’t know” to the questions this tool asks you about support numbers. 
+  If you have trouble using the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) and you’re not sure what the new support amounts should be, you can answer “I don’t know” to the questions this tool asks you about support numbers. 
   
   If you answer this way, this tool will produce a motion asking the court to refer you to the Friend of the Court for a support investigation, along with a referral order. You will see more information in the instructions you can download at the end of this tool.
 continue button field: cannot_calc_support_intro
@@ -614,7 +614,7 @@ id: child support formula FYI
 question: |
   Child Support Formula
 subquestion: |
-  **If you have not done so already, use the [MiChildSupport Calculator](https://micase.state.mi.us/calculatorapp/public/welcome/load.html) now to calculate child support based on the Michigan Child
+  **If you have not done so already, use the [MiChildSupport Calculator](https://pcal.state.mi.us/welcome) now to calculate child support based on the Michigan Child
   Support Formula**. You will see the child support numbers at the end of the calculation on the results page.
 
   If you are asking for the Support Formula amounts in your motion, you will need the Calculator results page to answer the questions
@@ -690,15 +690,16 @@ fields:
       Ordinary medical costs are uninsured costs for things like office visits and prescription co-pays.
 ---
 id: additional amount new question
-question: |
-  % if agreed_on_who_pays:
-  In the agreement, are
-  % else:
-  Are
-  % endif
-  you asking the court to order an additional amount each month for other expenses?
+question: Other Expenses
 fields:
-  - no label: is_additional_amount_new
+  - label: |
+      % if agreed_on_who_pays:
+      In the agreement, are you asking the court to order an additional amount each month for other expenses?
+      % else:
+      Are you asking the court to order an additional amount each month for other expenses?
+      % endif
+    field: is_additional_amount_new
+    label above field: True
     datatype: yesnoradio
   - "Complete the following sentence. 'The reason for the other expenses is as follows:'": additional_amount_reason
     input type: area
@@ -982,8 +983,7 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-    # Actually county
-    - trial_court_district: |
+    - trial_court_county: |
           ${ the_court.address.county }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
@@ -1029,6 +1029,7 @@ attachment:
           % endif
     - signature_date: ${ signature_date if MLH_esign else "" }
     - users1_signature: ${ f"/s/ {users[0]}" if MLH_esign else "" }
+    - explain_esign: ${ MLH_esign_tag if MLH_esign else "" }
     - service_signature_date: 
     - service_signature:
     # Unused button : ___instructions_link____
@@ -1038,28 +1039,31 @@ attachment:
   variable name: mrcs_foc10_main[i]
   skip undefined: True
   editable: False
-  pdf template file: Uniform_Child_Support_Order_-_FOC_10.pdf
+  pdf template file: docassemble.MLHDivorceAndCustody:data/templates/uniform_child_support_order_foc_10.pdf
   fields:
-    - trial_court_circuit: |
-          % if the_court.type == 'circuit':
-          ${ the_court.number }
-          % endif
-    # Actually county
-    - trial_court_district: |
-          ${ the_court.address.county }
-    - CASE NO: ${ docket_number }
+    - trial_court: ${ the_court.number }
+    - trial_court_county: |
+          ${ the_court.address.county.upper() }
+    - case_number_1: ${ docket_number }
+    - case_number_2: ${ docket_number }
+    - case_number_3: ${ docket_number }
+    - case_number_4: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - trial_court_phone_number: ${ the_court.phone }
-    - plaintiffs: |
+    - plaintiff_block: |
           ${ plaintiffs }  
-          ${ plaintiffs[0].address.on_one_line() }  
+          ${ plaintiffs[0].address.line_one() }
+          ${ plaintiffs[0].address.line_two() }
           ${ word("Does not have phone") if plaintiffs[0].no_phone_number else plaintiffs[0].phone_numbers() }
-    - defendants: |
+    - defendant_block: |
           ${ defendants }  
-          ${ defendants[0].address.on_one_line() }  
+          ${ defendants[0].address.line_one() }
+          ${ defendants[0].address.line_two() }
           ${ word("Does not have phone") if defendants[0].no_phone_number else defendants[0].phone_numbers() }
-    - plaintiffs_attorney: 
-    - defendants_attorney: 
+    - plaintiffs_attorney_block: 
+    - defendants_attorney_block: 
+    - plaintiff_employer_block:
+    - defendant_employer_block:
     - children1: ${ children[0] }
     - children2: ${ children[1] if len(children) > 1 else "" }
     - children3: ${ children[2] if len(children) > 2 else "" }
