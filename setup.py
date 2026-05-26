@@ -44,9 +44,9 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHMotionRegardingChildSupport',
-      version='1.1.1',
+      version='1.1.2',
       description=('A motion to change or get child support in Michigan'),
-      long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n* Bryce Willey\r\n* Emily Kress Miller\r\n\r\n## Changelog:\r\n* 4/10/26   1.1.1 update FOC form to SRA version; update child support calc links; fix "no label" question on multi question screen; bring review screen closer to current standards; updat outro pages; add case type language\r\n* 3/5/26    1.1.0 Reference Divorce FOC10 PDF template; reformat FOC10 attachment and fix error\r\n* 12/12/25  1.0.5 Update embeded survey\r\n* 5/28/25   1.0.4 Update instructions header styling and language\r\n* 2/13/25   1.0.3 Behind-the-scenes court logic adjustment\r\n* 12/17/24  1.0.2 Update forms\r\n* 9/30/24   1.0.1 add user survey\r\n* 9/18/24   1.0.0 preparing to go live',
+      long_description='# docassemble.MLHMotionRegardingChildSupport\r\n\r\nA motion to change or get child support in Michigan\r\n\r\n## Authors:\r\n* Bryce Willey\r\n* Emily Kress Miller\r\n\r\n## Changelog:\r\n* 5/26/26   1.1.2 Remove unused form templates; minor font adjustments; fix missing county on deviation form; prep for change in survey embed method\r\n* 4/10/26   1.1.1 update FOC form to SRA version; update child support calc links; fix "no label" question on multi question screen; bring review screen closer to current standards; updat outro pages; add case type language\r\n* 3/5/26    1.1.0 Reference Divorce FOC10 PDF template; reformat FOC10 attachment and fix error\r\n* 12/12/25  1.0.5 Update embeded survey\r\n* 5/28/25   1.0.4 Update instructions header styling and language\r\n* 2/13/25   1.0.3 Behind-the-scenes court logic adjustment\r\n* 12/17/24  1.0.2 Update forms\r\n* 9/30/24   1.0.1 add user survey\r\n* 9/18/24   1.0.0 preparing to go live',
       long_description_content_type='text/markdown',
       author='Bryce Willey',
       author_email='ekressmiller@lsscm.org',

@@ -2,6 +2,10 @@ include:
   - docassemble.AssemblyLine:assembly_line.yml
   - docassemble.mlhframework:mlh_interview_framework.yml
 ---
+features:
+  javascript:
+    - survey_monkey_script.js
+---
 metadata:
   title: |
     Motion to Change or Get Child Support
@@ -1082,9 +1086,8 @@ attachment:
           % if the_court.type == 'circuit':
           ${ the_court.number }
           % endif
-    # Actually county
-    - trial_court_district: |
-          ${ the_court.address.county }
+    - trial_court_county: |
+          ${ the_court.address.county.upper() }
     - docket_number: ${ docket_number }
     - trial_court_address_on_one_line: ${ the_court.address.on_one_line() }
     - CASE NO: ${ docket_number }
