@@ -497,7 +497,7 @@ question: |
   When was ${ children[i] } born?
 fields:
   - Birthdate: children[i].birthdate
-    datatype: ThreePartsDate
+    datatype: Birthdate
     alMin: ${ format_date( today() - date_interval(years=18), format='MM/dd/yyyy') }
     alMinMessage: |
       This form is only for children under 18, but you said ${ children[i].name.familiar() } was over 18.
