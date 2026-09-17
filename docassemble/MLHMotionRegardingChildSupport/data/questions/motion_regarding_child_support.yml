@@ -374,8 +374,8 @@ fields:
       - No, I do not have a child support order: False
   - When did the judge sign the most recent Uniform Child Support Order?: recent_judgment_date
     label above field: True
-    datatype: ThreePartsDate
-    alMax: ${ today(format='MM/dd/yyyy') }
+    datatype: date
+    max: ${ today() }
     show if: has_existing_support_order
   - note: |
       ${ collapse_template(where_date_uniform_child_order) }
